@@ -1,0 +1,18 @@
+# bin
+cmd/schemarshal/schemarshal
+
+vendor/
+
+# editor
+*.swp
+*~
+\#*\#
+.buildpath
+.project
+.settings/
+.idea/
+*.iml
+.vscode/
+
+.DS_Store
+Thumbs.db
