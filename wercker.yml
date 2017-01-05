@@ -54,13 +54,13 @@ build:
         code: |
           echo "mode: count" > c.out
           for pkg in $("$WERCKER_SOURCE_DIR/glide" novendor); do
-            go test -covermode=count -coverprofile="pkg.out" "$pkg"
+            go test -v -covermode=count -coverprofile="pkg.out" "$pkg"
             if [ -f "pkg.out" ]; then
               tail -n +2 "pkg.out" >> c.out
               rm pkg.out
             fi
           done
-          GIT_BRANCH="$WERCKER_GIT_BRANCH" "$GOPATH/bin/goveralls" -coverprofile=c.out -service=wercker.com -repotoken "$WERCKER_GOVERALLS_TOKEN"
+          GIT_BRANCH="$WERCKER_GIT_BRANCH" "$GOPATH/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "$WERCKER_GOVERALLS_TOKEN"
 
     # corros compile
     - tcnksm/gox
