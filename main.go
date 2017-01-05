@@ -17,8 +17,8 @@ import (
 
 	schema "github.com/lestrrat/go-jsschema"
 
-	schemarshal "github.com/aaharu/schemarshal"
 	jsonschema "github.com/aaharu/schemarshal/jsonschema"
+	version "github.com/aaharu/schemarshal/version"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) > 1 && *showVersion {
-		fmt.Printf("schemarshal %s\n", schemarshal.Version)
+		fmt.Printf("schemarshal %s\n", version.Version)
 		os.Exit(0)
 	}
 
@@ -57,8 +57,8 @@ func main() {
 	}
 
 	js := jsonschema.New(jsschema)
-	js.setCommand(strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
-	js.setPackageName(packageName)
+	js.SetCommand(strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
+	js.SetPackageName(packageName)
 	output, err := js.Typedef(fileName(inputFile))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to generate: %s\n", err)

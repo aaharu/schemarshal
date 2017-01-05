@@ -1,5 +1,5 @@
-hash: 3fb131132a5a2e0e2311655a0323784bb7fdce3281fe2276a84c62d02605682a
-updated: 2017-01-05T22:45:53.851341244+09:00
+hash: 23470f0a0caa8978c096c8e5c90ead718308ec8824717444a5d0d809381ae109
+updated: 2017-01-05T23:43:21.158491208+09:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
@@ -19,10 +19,4 @@ imports:
   version: f74c056fe41f860aa6264478c664a6fff8a64298
 - name: github.com/pkg/errors
   version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
-testImports:
-- name: github.com/axw/gocov
-  version: c77561ca0c0cb1ed5d4ce4a912a75f5532566422
-  subpackages:
-  - gocov
-- name: github.com/mattn/goveralls
-  version: 9d621f6940639bf287ecbb6f585a2c26eeba3bbe
+testImports: []

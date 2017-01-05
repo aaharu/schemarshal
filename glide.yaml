@@ -1,9 +1,3 @@
 package: github.com/aaharu/schemarshal
 import:
 - package: github.com/lestrrat/go-jsschema
-testImport:
-- package: github.com/axw/gocov
-  subpackages:
-  - gocov
-- package: github.com/mattn/goveralls
-  version: ^0.0.1

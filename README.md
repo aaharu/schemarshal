@@ -5,7 +5,7 @@ Generates Go struct types from a [JSON Schema](http://json-schema.org/).
 ## Installation
 
 ```bash
-go get github.com/aaharu/schemarshal/cmd/schemarshal
+go get github.com/aaharu/schemarshal
 ```
 
 ## Usage
