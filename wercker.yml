@@ -1,29 +1,6 @@
-# This references the default golang container from
-# the Docker Hub: https://registry.hub.docker.com/u/library/golang/
-# If you want Google's container you would reference google/golang
-# Read more about containers on our dev center
-# http://devcenter.wercker.com/docs/containers/index.html
 box: tcnksm/gox
-# This is the build pipeline. Pipelines are the core of wercker
-# Read more about pipelines on our dev center
-# http://devcenter.wercker.com/docs/pipelines/index.html
-
-# You can also use services such as databases. Read more on our dev center:
-# http://devcenter.wercker.com/docs/services/index.html
-# services:
-    # - postgres
-    # http://devcenter.wercker.com/docs/services/postgresql.html
-
-    # - mongo
-    # http://devcenter.wercker.com/docs/services/mongodb.html
 build:
-  # The steps that will be executed on build
-  # Steps make up the actions in your pipeline
-  # Read more about steps on our dev center:
-  # http://devcenter.wercker.com/docs/steps/index.html
   steps:
-    # Sets the go workspace and places you package
-    # at the right place in the workspace tree
     - setup-go-workspace
 
     # Gets the dependencies
@@ -32,35 +9,52 @@ build:
         code: |
           curl -L -o glide.tar.gz https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz
           tar -zxf glide.tar.gz
-          mv linux-amd64/glide "$WERCKER_SOURCE_DIR/glide"
+          mv linux-amd64/glide "${WERCKER_SOURCE_DIR}/glide"
           rm -rf linux-amd64 glide.tar.gz
-          "$WERCKER_SOURCE_DIR/glide" --version
-          "$WERCKER_SOURCE_DIR/glide" install
+          "${WERCKER_SOURCE_DIR}/glide" --version
+          "${WERCKER_SOURCE_DIR}/glide" install
 
     # Build the project
     - script:
         name: go build
         code: |
-          go build $("$WERCKER_SOURCE_DIR/glide" novendor)
-
-    - script:
-        name: goveralls install
-        code: |
-          go get github.com/mattn/goveralls
+          go build $("${WERCKER_SOURCE_DIR}/glide" novendor)
 
     # Test the project
     - script:
         name: go test and goveralls
         code: |
           echo "mode: count" > c.out
-          for pkg in $("$WERCKER_SOURCE_DIR/glide" novendor); do
-            go test -v -covermode=count -coverprofile="pkg.out" "$pkg"
+          for pkg in $("${WERCKER_SOURCE_DIR}/glide" novendor); do
+            go test -v -covermode=count -coverprofile="pkg.out" "${pkg}"
             if [ -f "pkg.out" ]; then
               tail -n +2 "pkg.out" >> c.out
               rm pkg.out
             fi
           done
-          GIT_BRANCH="$WERCKER_GIT_BRANCH" "$GOPATH/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "$COVERALLS_TOKEN"
+          go get github.com/mattn/goveralls
+          GIT_BRANCH="${WERCKER_GIT_BRANCH}" "${GOPATH}/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "${COVERALLS_TOKEN}"
 
     # corros compile
-    - tcnksm/gox
+    - tcnksm/gox:
+        os: "darwin linux windows freebsd netbsd"
+
+    - tcnksm/zip:
+      input: ${WERCKER_OUTPUT_DIR}/pkg
+      output: ${WERCKER_OUTPUT_DIR}/dist
+
+    - script:
+        name: output release tag
+        code: |
+          fgrep 'const Version' "${WERCKER_SOURCE_DIR}/version/version.go" | cut -f4 -d ' ' | tr -d '"' > "${WERCKER_OUTPUT_DIR}/tag.out"
+
+deploy:
+  steps:
+    - script:
+      name: restore release tag
+      code: |
+        export RELEASE_TAG=$(cat tag.out)
+    - tcnksm/ghr:
+      token: ${GITHUB_TOKEN}
+      input: dist
+      version: ${RELEASE_TAG}
