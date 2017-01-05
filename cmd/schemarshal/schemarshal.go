@@ -17,7 +17,8 @@ import (
 
 	schema "github.com/lestrrat/go-jsschema"
 
-	schemarshal "../.."
+	schemarshal "github.com/aaharu/schemarshal"
+	jsonschema "github.com/aaharu/schemarshal/jsonschema"
 )
 
 func main() {
@@ -55,8 +56,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	osArg := strings.Trim(fmt.Sprintf("%v", os.Args), "[]")
-	output, err := schemarshal.GenerateGoFile(jsschema, fileName(inputFile), packageName, osArg)
+	js := jsonschema.New(jsschema)
+	js.setCommand(strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
+	js.setPackageName(packageName)
+	output, err := js.Typedef(fileName(inputFile))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to generate: %s\n", err)
 		os.Exit(1)
