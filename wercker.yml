@@ -60,7 +60,7 @@ build:
               rm pkg.out
             fi
           done
-          GIT_BRANCH="$WERCKER_GIT_BRANCH" "$GOPATH/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "$WERCKER_GOVERALLS_TOKEN"
+          GIT_BRANCH="$WERCKER_GIT_BRANCH" "$GOPATH/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "$COVERALLS_TOKEN"
 
     # corros compile
     - tcnksm/gox
