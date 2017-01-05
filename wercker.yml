@@ -25,21 +25,18 @@ build:
     # Sets the go workspace and places you package
     # at the right place in the workspace tree
     - setup-go-workspace
-    - glide-install
+
     # Gets the dependencies
-    - script:
-        name: go get
-        code: |
-          glide install
+    - glide-install
 
     # Build the project
     - script:
         name: go build
         code: |
-          go build $(glide novendor)
+          go build $("$WERCKER_STEP_ROOT/glide" novendor)
 
     # Test the project
     - script:
         name: go test
         code: |
-          go test $(glide novendor)
+          go test $("$WERCKER_STEP_ROOT/glide" novendor)
