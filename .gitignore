@@ -4,6 +4,8 @@ cmd/schemarshal/schemarshal
 *.out
 vendor/
 
+artifacts/
+
 # editor
 *.swp
 *~

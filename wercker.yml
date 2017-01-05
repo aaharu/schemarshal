@@ -40,3 +40,13 @@ build:
         name: go test
         code: |
           go test $("$WERCKER_STEP_ROOT/glide" novendor)
+
+    # corros compile
+    - script:
+        name: install mitchellh/gox
+        code: |
+          go get -u -v github.com/mitchellh/gox
+          export PATH="$GOPATH/bin:$PATH"
+          echo $PATH
+          sudo -E gox -build-toolchain
+    - tcnksm/gox

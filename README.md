@@ -1,4 +1,4 @@
-# schemarshal
+# schemarshal [![wercker status](https://app.wercker.com/status/ebb1f8ec249177acd0d47bd8a6a59dd2/s/master "wercker status")](https://app.wercker.com/project/byKey/ebb1f8ec249177acd0d47bd8a6a59dd2)
 
 Generates Go struct types from a [JSON Schema](http://json-schema.org/).
 
