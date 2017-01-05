@@ -2,6 +2,7 @@
 cmd/schemarshal/schemarshal
 
 *.out
+*.cov
 vendor/
 
 artifacts/

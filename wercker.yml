@@ -3,7 +3,7 @@
 # If you want Google's container you would reference google/golang
 # Read more about containers on our dev center
 # http://devcenter.wercker.com/docs/containers/index.html
-box: golang
+box: tcnksm/gox
 # This is the build pipeline. Pipelines are the core of wercker
 # Read more about pipelines on our dev center
 # http://devcenter.wercker.com/docs/pipelines/index.html
@@ -37,16 +37,10 @@ build:
 
     # Test the project
     - script:
-        name: go test
+        name: go test and goveralls
         code: |
-          go test $("$WERCKER_STEP_ROOT/glide" novendor)
+          go test --covermode=count -coverprofile=profile.cov $("$WERCKER_STEP_ROOT/glide" novendor)
+          GIT_BRANCH="$WERCKER_GIT_BRANCH" goveralls -coverprofile=profile.cov -service=wercker.com -repotoken "$WERCKER_GOVERALLS_TOKEN"
 
     # corros compile
-    - script:
-        name: install mitchellh/gox
-        code: |
-          go get -u -v github.com/mitchellh/gox
-          export PATH="$GOPATH/bin:$PATH"
-          echo $PATH
-          sudo -E gox -build-toolchain
     - tcnksm/gox
