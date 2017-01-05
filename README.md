@@ -1,11 +1,13 @@
-# schemarshal
+# schemarshal [![wercker status](https://app.wercker.com/status/ebb1f8ec249177acd0d47bd8a6a59dd2/s/master "wercker status")](https://app.wercker.com/project/byKey/ebb1f8ec249177acd0d47bd8a6a59dd2)
+
+[![Coverage Status](https://coveralls.io/repos/github/aaharu/schemarshal/badge.svg)](https://coveralls.io/github/aaharu/schemarshal)
 
 Generates Go struct types from a [JSON Schema](http://json-schema.org/).
 
 ## Installation
 
 ```bash
-go get github.com/aaharu/schemarshal/cmd/schemarshal
+go get github.com/aaharu/schemarshal
 ```
 
 ## Usage

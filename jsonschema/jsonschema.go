@@ -13,7 +13,7 @@ import (
 
 	schema "github.com/lestrrat/go-jsschema"
 
-	schemarshal "github.com/aaharu/schemarshal"
+	utils "github.com/aaharu/schemarshal/utils"
 )
 
 // JSONSchema is JSON Schema interface
@@ -30,18 +30,20 @@ func New(s *schema.Schema) *JSONSchema {
 	return &js
 }
 
-func (js JSONSchema) setCommand(command string) {
+// SetCommand set command
+func (js JSONSchema) SetCommand(command string) {
 	js.command = command
 }
 
-func (js JSONSchema) setPackageName(packageName string) {
+// SetPackageName set package name
+func (js JSONSchema) SetPackageName(packageName string) {
 	js.packageName = packageName
 }
 
 // Typedef is a generator that define struct from JSON Schema
 func (js JSONSchema) Typedef(defaultTypeName string) (string, error) {
 	var str string
-	str += schemarshal.GeneratedByComment(js.command)
+	str += utils.GeneratedByComment(js.command)
 	str += "\n"
 	str += fmt.Sprintf("package %s\n\n", js.packageName)
 	str += fmt.Sprintf("import \"time\"\n\n")
@@ -51,7 +53,7 @@ func (js JSONSchema) Typedef(defaultTypeName string) (string, error) {
 	}
 	str += "type"
 	str += " "
-	str += schemarshal.Ucfirst(name)
+	str += utils.Ucfirst(name)
 	str += " "
 	genarated, err := js.typer(0)
 	if err != nil {
@@ -69,7 +71,7 @@ func (js JSONSchema) structor(name string, nestLevel int, required bool) (string
 	for i := 1; i <= nestLevel; i++ {
 		str += "\t"
 	}
-	str += schemarshal.Ucfirst(name)
+	str += utils.Ucfirst(name)
 	str += " "
 
 	genarated, err := js.typer(nestLevel)
@@ -79,7 +81,7 @@ func (js JSONSchema) structor(name string, nestLevel int, required bool) (string
 	str += genarated
 
 	str += " "
-	str += schemarshal.MarshalTag(name, required)
+	str += utils.MarshalTag(name, required)
 	str += "\n"
 
 	return str, nil

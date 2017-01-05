@@ -3,7 +3,7 @@
 # If you want Google's container you would reference google/golang
 # Read more about containers on our dev center
 # http://devcenter.wercker.com/docs/containers/index.html
-box: golang
+box: tcnksm/gox
 # This is the build pipeline. Pipelines are the core of wercker
 # Read more about pipelines on our dev center
 # http://devcenter.wercker.com/docs/pipelines/index.html
@@ -27,16 +27,40 @@ build:
     - setup-go-workspace
 
     # Gets the dependencies
-    - glide-install
+    - script:
+        name: glide install
+        code: |
+          curl -L -o glide.tar.gz https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz
+          tar -zxf glide.tar.gz
+          mv linux-amd64/glide "$WERCKER_SOURCE_DIR/glide"
+          rm -rf linux-amd64 glide.tar.gz
+          "$WERCKER_SOURCE_DIR/glide" --version
+          "$WERCKER_SOURCE_DIR/glide" install
 
     # Build the project
     - script:
         name: go build
         code: |
-          go build $("$WERCKER_STEP_ROOT/glide" novendor)
+          go build $("$WERCKER_SOURCE_DIR/glide" novendor)
+
+    - script:
+        name: goveralls install
+        code: |
+          go get github.com/mattn/goveralls
 
     # Test the project
     - script:
-        name: go test
+        name: go test and goveralls
         code: |
-          go test $("$WERCKER_STEP_ROOT/glide" novendor)
+          echo "mode: count" > c.out
+          for pkg in $("$WERCKER_SOURCE_DIR/glide" novendor); do
+            go test -v -covermode=count -coverprofile="pkg.out" "$pkg"
+            if [ -f "pkg.out" ]; then
+              tail -n +2 "pkg.out" >> c.out
+              rm pkg.out
+            fi
+          done
+          GIT_BRANCH="$WERCKER_GIT_BRANCH" "$GOPATH/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "$WERCKER_GOVERALLS_TOKEN"
+
+    # corros compile
+    - tcnksm/gox

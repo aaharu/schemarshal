@@ -1,8 +1,12 @@
 # bin
-cmd/schemarshal/schemarshal
+schemarshal
+glide
 
 *.out
+*.cov
 vendor/
+
+artifacts/
 
 # editor
 *.swp
