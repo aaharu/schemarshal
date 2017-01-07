@@ -38,10 +38,11 @@ build:
     # corros compile
     - tcnksm/gox:
         os: "darwin linux windows freebsd netbsd"
+        arch: "amd64"
 
     - tcnksm/zip:
-      input: ${WERCKER_OUTPUT_DIR}/pkg
-      output: ${WERCKER_OUTPUT_DIR}/dist
+        input: ${WERCKER_OUTPUT_DIR}/pkg
+        output: ${WERCKER_OUTPUT_DIR}/dist
 
     - script:
         name: output release tag
@@ -51,10 +52,10 @@ build:
 deploy:
   steps:
     - script:
-      name: restore release tag
-      code: |
-        export RELEASE_TAG=$(cat tag.out)
+        name: restore release tag
+        code: |
+          export RELEASE_TAG=$(cat tag.out)
     - tcnksm/ghr:
-      token: ${GITHUB_TOKEN}
-      input: dist
-      version: ${RELEASE_TAG}
+        token: ${GITHUB_TOKEN}
+        input: dist
+        version: ${RELEASE_TAG}

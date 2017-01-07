@@ -5,4 +5,4 @@
 package version
 
 // Version of schemarshal
-const Version = "0.1.0"
+const Version = "0.2.0"

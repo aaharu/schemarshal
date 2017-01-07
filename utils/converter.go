@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	version "github.com/aaharu/schemarshal/version"
+	"github.com/aaharu/schemarshal/version"
 )
 
 // MarshalTag return tag for MarshalJSON

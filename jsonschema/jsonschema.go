@@ -10,10 +10,11 @@ package jsonschema
 
 import (
 	"fmt"
+	"go/format"
 
 	schema "github.com/lestrrat/go-jsschema"
 
-	utils "github.com/aaharu/schemarshal/utils"
+	"github.com/aaharu/schemarshal/utils"
 )
 
 // JSONSchema is JSON Schema interface
@@ -31,17 +32,17 @@ func New(s *schema.Schema) *JSONSchema {
 }
 
 // SetCommand set command
-func (js JSONSchema) SetCommand(command string) {
+func (js *JSONSchema) SetCommand(command string) {
 	js.command = command
 }
 
 // SetPackageName set package name
-func (js JSONSchema) SetPackageName(packageName string) {
+func (js *JSONSchema) SetPackageName(packageName string) {
 	js.packageName = packageName
 }
 
 // Typedef is a generator that define struct from JSON Schema
-func (js JSONSchema) Typedef(defaultTypeName string) (string, error) {
+func (js *JSONSchema) Typedef(defaultTypeName string) (string, error) {
 	var str string
 	str += utils.GeneratedByComment(js.command)
 	str += "\n"
@@ -62,10 +63,15 @@ func (js JSONSchema) Typedef(defaultTypeName string) (string, error) {
 	str += genarated
 	str += "\n"
 
-	return str, err
+	src, err := format.Source([]byte(str))
+	if err != nil {
+		return str, err
+	}
+
+	return string(src), err
 }
 
-func (js JSONSchema) structor(name string, nestLevel int, required bool) (string, error) {
+func (js *JSONSchema) structor(name string, nestLevel int, required bool) (string, error) {
 	var str string
 
 	for i := 1; i <= nestLevel; i++ {
@@ -87,7 +93,7 @@ func (js JSONSchema) structor(name string, nestLevel int, required bool) (string
 	return str, nil
 }
 
-func (js JSONSchema) typer(nestLevel int) (string, error) {
+func (js *JSONSchema) typer(nestLevel int) (string, error) {
 	var str string
 	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) {
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {

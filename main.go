@@ -11,46 +11,62 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
-	"path"
 	"strings"
+	"syscall"
+
+	"golang.org/x/crypto/ssh/terminal"
 
 	schema "github.com/lestrrat/go-jsschema"
 
-	jsonschema "github.com/aaharu/schemarshal/jsonschema"
-	version "github.com/aaharu/schemarshal/version"
+	"github.com/aaharu/schemarshal/cui"
+	"github.com/aaharu/schemarshal/jsonschema"
+	"github.com/aaharu/schemarshal/version"
 )
 
 func main() {
-	var (
-		outputFileName string
-		packageName    string
-	)
-	flag.StringVar(&outputFileName, "o", "", "Write output to file instead of stdout.")
-	flag.StringVar(&outputFileName, "output", "", "Write output to file instead of stdout.")
-	flag.StringVar(&packageName, "p", "main", "Package name for output.")
-	flag.StringVar(&packageName, "package", "main", "Package name for output.")
-	showVersion := flag.Bool("version", false, "Show version.")
-	flag.Parse()
+	args := cui.ParseArguments()
 
-	if len(os.Args) > 1 && *showVersion {
+	if args.ShowVersion {
 		fmt.Printf("schemarshal %s\n", version.Version)
 		os.Exit(0)
 	}
 
-	if len(flag.Args()) < 1 {
-		usage()
-		os.Exit(1)
+	var input io.Reader
+	typeName := args.TypeName
+	if terminal.IsTerminal(syscall.Stdin) {
+		if len(flag.Args()) < 1 {
+			cui.Usage()
+			os.Exit(1)
+		}
+
+		inputFile, err := os.Open(flag.Args()[0])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to open schema: %s\n", err)
+			os.Exit(1)
+		}
+		defer inputFile.Close()
+
+		if typeName == "" {
+			typeName = cui.FileName(inputFile)
+		}
+		input = inputFile
+	} else {
+		stdin, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to read input: %s\n", err)
+			os.Exit(1)
+		}
+
+		if typeName == "" {
+			typeName = "T"
+		}
+		input = strings.NewReader(string(stdin))
 	}
 
-	inputFile, err := os.Open(flag.Args()[0])
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to open schema: %s\n", err)
-		os.Exit(1)
-	}
-	defer inputFile.Close()
-
-	jsschema, err := schema.Read(inputFile)
+	jsschema, err := schema.Read(input)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read schema: %s\n", err)
 		os.Exit(1)
@@ -58,17 +74,17 @@ func main() {
 
 	js := jsonschema.New(jsschema)
 	js.SetCommand(strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
-	js.SetPackageName(packageName)
-	output, err := js.Typedef(fileName(inputFile))
+	js.SetPackageName(args.PackageName)
+	output, err := js.Typedef(typeName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to generate: %s\n", err)
 		os.Exit(1)
 	}
 
-	if outputFileName == "" {
+	if args.OutputFileName == "" {
 		fmt.Printf("%s\n", output)
 	} else {
-		outputFile, err := os.Create(outputFileName)
+		outputFile, err := os.Create(args.OutputFileName)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to write file: %s\n", err)
 			os.Exit(1)
@@ -77,24 +93,4 @@ func main() {
 
 		outputFile.Write([]byte(output))
 	}
-}
-
-func usage() {
-	fmt.Println("SYNOPSIS")
-	fmt.Println("  schemarshal [options] <json_shcema_file>")
-	fmt.Println("OPTIONS")
-	fmt.Println("  -h, -help")
-	fmt.Println("           Show help message.")
-	fmt.Println("  -o <file>, -output <file>")
-	fmt.Println("           Write output to <file> instead of stdout.")
-	fmt.Println("  -p <package>, -package <package>")
-	fmt.Println("           Package name for output. (default `main`)")
-	fmt.Println("  -version")
-	fmt.Println("           Show version.")
-}
-
-func fileName(file *os.File) string {
-	name := path.Base(file.Name())
-	ext := path.Ext(name)
-	return strings.TrimRight(name, ext)
 }

@@ -14,15 +14,17 @@ go get github.com/aaharu/schemarshal
 
 ```
 SYNOPSIS
-  schemarshal [options] <json_shcema_file>
+  schemarshal [options] [<json_schema_file>]
 OPTIONS
   -h, -help
-           Show help message.
+           Show this help message.
   -o <file>, -output <file>
-           Write output to <file> instead of stdout.
+           Write output to file instead of stdout.
   -p <package>, -package <package>
            Package name for output. (default `main`)
-  -version
+  -t <package>, -type <package>
+           Set default Type name.
+  -v, -version
            Show version.
 ```
 
@@ -38,6 +40,9 @@ OPTIONS
 * https://github.com/lestrrat/go-jsschema
   - JSON Schema parser
   - MIT License
+* golang.org/x/crypto/ssh/terminal
+  - https://godoc.org/golang.org/x/crypto/ssh/terminal
+  - https://golang.org/LICENSE
 
 ## Similar Projects
 

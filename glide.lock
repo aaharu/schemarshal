@@ -1,5 +1,5 @@
-hash: 23470f0a0caa8978c096c8e5c90ead718308ec8824717444a5d0d809381ae109
-updated: 2017-01-05T23:43:21.158491208+09:00
+hash: 5d3ef523a7bb34322bc57c775a712625a7096f295c05d182f1f7dcb04a417901
+updated: 2017-01-08T00:23:36.373767661+09:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
@@ -19,4 +19,8 @@ imports:
   version: f74c056fe41f860aa6264478c664a6fff8a64298
 - name: github.com/pkg/errors
   version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
+- name: golang.org/x/crypto
+  version: cb497ae8f18e3c55f81bc9f3876c8f4c3d8a2813
+  subpackages:
+  - ssh/terminal
 testImports: []
