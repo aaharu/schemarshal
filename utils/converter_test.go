@@ -4,27 +4,25 @@
 
 package utils
 
-import "testing"
-
-func TestMarshalTagEmpty(t *testing.T) {
-	actual := MarshalTag("address", false)
-	expected := "`json:\"address,omitempty\"`"
-	if actual != expected {
-		t.Errorf("got %v\nwant %v", actual, expected)
-	}
-}
-
-func TestMarshalTag(t *testing.T) {
-	actual := MarshalTag("address", true)
-	expected := "`json:\"address\"`"
-	if actual != expected {
-		t.Errorf("got %v\nwant %v", actual, expected)
-	}
-}
+import (
+	"os"
+	"testing"
+)
 
 func TestUcfirst(t *testing.T) {
 	actual := Ucfirst("address")
 	expected := "Address"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
+}
+
+func TestFileName(t *testing.T) {
+	file, _ := os.Open("./converter_test.go")
+	defer file.Close()
+
+	actual := FileName(file)
+	expected := "converter_test"
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}

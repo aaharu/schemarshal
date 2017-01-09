@@ -4,11 +4,12 @@
 
 package version
 
-import "fmt"
+import "testing"
 
-// Version of schemarshal
-const Version = "0.2.1"
-
-func String() string {
-	return fmt.Sprintf("schemarshal %s", Version)
+func TestString(t *testing.T) {
+	actual := String()
+	expected := "schemarshal 0.2.1"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
 }

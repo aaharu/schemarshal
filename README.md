@@ -31,8 +31,6 @@ OPTIONS
 ## TODO
 
 - [ ] unit tests
-- [ ] continuous integration , wercker?
-- [ ] refactoring
 - [ ] write doc
 
 ## Dependencies

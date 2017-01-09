@@ -2,18 +2,12 @@
 // This source code is licensed under the BSD-style license found in
 // the LICENSE file in the root directory of this source tree.
 
-// This source code use following software(s):
-//   - go-jsschema https://github.com/lestrrat/go-jsschema
-//     Copyright (c) 2016 lestrrat
-
 package cui
 
 import (
 	"flag"
 	"fmt"
 	"os"
-	"path"
-	"strings"
 )
 
 type Arguments struct {
@@ -42,7 +36,7 @@ func Usage() {
 
 // ParseArguments parse command-line arguments
 func ParseArguments() *Arguments {
-	args := new(Arguments)
+	args := &Arguments{}
 	flag.Usage = Usage
 	flag.StringVar(&args.OutputFileName, "o", "", "Write output to file instead of stdout.")
 	flag.StringVar(&args.OutputFileName, "output", "", "Write output to file instead of stdout.")
@@ -54,11 +48,4 @@ func ParseArguments() *Arguments {
 	flag.BoolVar(&args.ShowVersion, "version", false, "Show version.")
 	flag.Parse()
 	return args
-}
-
-// FileName return file-name without ext
-func FileName(file *os.File) string {
-	name := path.Base(file.Name())
-	ext := path.Ext(name)
-	return strings.TrimRight(name, ext)
 }

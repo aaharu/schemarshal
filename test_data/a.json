@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "properties": {
+    "address": {
+      "type": "object",
+      "properties": {
+        "streetAddress": {
+          "type": "string"
+        },
+        "city": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "streetAddress",
+        "city"
+      ]
+    },
+    "test": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+    },
+    "test2": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "phoneNumber": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string"
+          },
+          "code": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "location",
+          "code"
+        ]
+      }
+    }
+  },
+  "required": [
+    "address",
+    "phoneNumber"
+  ]
+}
