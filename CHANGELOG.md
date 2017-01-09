@@ -4,6 +4,9 @@
 ### Changed
 - refactoring
 
+### Added
+- add tests
+
 
 ## [0.2.0] - 2017-01-08
 ### Fixed

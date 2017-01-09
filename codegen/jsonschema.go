@@ -6,7 +6,7 @@
 //   - go-jsschema https://github.com/lestrrat/go-jsschema
 //     Copyright (c) 2016 lestrrat
 
-package jsonschema
+package codegen
 
 import (
 	"fmt"
@@ -14,7 +14,6 @@ import (
 
 	schema "github.com/lestrrat/go-jsschema"
 
-	"github.com/aaharu/schemarshal/codegen"
 	"github.com/aaharu/schemarshal/utils"
 )
 
@@ -45,10 +44,10 @@ func (js *JSONSchema) GetTitle() string {
 	return js.schema.Title
 }
 
-func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
+func (js *JSONSchema) GetType() (*JSONType, error) {
 	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) {
-		t := &codegen.JSONType{
-			Format: codegen.INTEGER,
+		t := &JSONType{
+			Format: INTEGER,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.Nullable = true
@@ -56,11 +55,11 @@ func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.StringType, js.schema.Type) {
-		t := &codegen.JSONType{}
+		t := &JSONType{}
 		if js.schema.Format == schema.FormatDateTime {
-			t.Format = codegen.DATETIME
+			t.Format = DATETIME
 		} else {
-			t.Format = codegen.STRING
+			t.Format = STRING
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.Nullable = true
@@ -68,8 +67,8 @@ func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.ObjectType, js.schema.Type) {
-		t := &codegen.JSONType{
-			Format: codegen.OBJECT,
+		t := &JSONType{
+			Format: OBJECT,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.Nullable = true
@@ -81,10 +80,10 @@ func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
 				if err != nil {
 					return nil, err
 				}
-				t.AddField(&codegen.Field{
+				t.AddField(&Field{
 					Name: utils.Ucfirst(key),
 					Type: propType,
-					Tag: &codegen.JSONTag{
+					Tag: &JSONTag{
 						Name:      key,
 						OmitEmpty: !js.schema.IsPropRequired(key),
 					},
@@ -99,8 +98,8 @@ func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
 			err := fmt.Errorf("unsupported type %v", js.schema.Items)
 			return nil, err
 		}
-		t := &codegen.JSONType{
-			Format: codegen.ARRAY,
+		t := &JSONType{
+			Format: ARRAY,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.Nullable = true
@@ -114,8 +113,8 @@ func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.BooleanType, js.schema.Type) {
-		t := &codegen.JSONType{
-			Format: codegen.BOOLEAN,
+		t := &JSONType{
+			Format: BOOLEAN,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.Nullable = true
@@ -123,8 +122,8 @@ func (js *JSONSchema) GetType() (*codegen.JSONType, error) {
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.NumberType, js.schema.Type) {
-		t := &codegen.JSONType{
-			Format: codegen.NUMBER,
+		t := &JSONType{
+			Format: NUMBER,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.Nullable = true

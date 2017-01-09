@@ -19,7 +19,7 @@ type Generator struct {
 	decls   []*TypeSpec
 }
 
-func New(packageName string, command string) *Generator {
+func NewGenerator(packageName string, command string) *Generator {
 	return &Generator{
 		name:    packageName,
 		command: command,

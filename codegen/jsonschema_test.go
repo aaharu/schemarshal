@@ -2,7 +2,7 @@
 // This source code is licensed under the BSD-style license found in
 // the LICENSE file in the root directory of this source tree.
 
-package jsonschema
+package codegen
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 )
 
 func Test(t *testing.T) {
-	file, _ := os.Open("../../test_data/a.json")
+	file, _ := os.Open("../test_data/a.json")
 	defer file.Close()
 	js, _ := New(file)
 	jsType, _ := js.GetType()

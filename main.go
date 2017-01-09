@@ -20,7 +20,6 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/aaharu/schemarshal/codegen"
-	"github.com/aaharu/schemarshal/codegen/jsonschema"
 	"github.com/aaharu/schemarshal/cui"
 	"github.com/aaharu/schemarshal/utils"
 	"github.com/aaharu/schemarshal/version"
@@ -68,13 +67,13 @@ func main() {
 		input = strings.NewReader(string(stdin))
 	}
 
-	js, err := jsonschema.New(input)
+	js, err := codegen.New(input)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read schema: %s\n", err)
 		os.Exit(1)
 	}
 
-	codeGenerator := codegen.New(args.PackageName, strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
+	codeGenerator := codegen.NewGenerator(args.PackageName, strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
 	codeGenerator.AddImport(&codegen.ImportSpec{
 		Path: `"time"`,
 	})
