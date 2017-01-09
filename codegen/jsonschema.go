@@ -22,8 +22,8 @@ type JSONSchema struct {
 	schema *schema.Schema
 }
 
-// New initialize struct
-func New(input io.Reader) (*JSONSchema, error) {
+// Read and initialize struct
+func Read(input io.Reader) (*JSONSchema, error) {
 	schema, err := schema.Read(input)
 	if err != nil {
 		return nil, err
@@ -34,58 +34,60 @@ func New(input io.Reader) (*JSONSchema, error) {
 	return &js, nil
 }
 
+// NewSchema initialize struct
 func NewSchema(s *schema.Schema) *JSONSchema {
 	js := JSONSchema{}
 	js.schema = s
 	return &js
 }
 
+// GetTitle return JSON Schema title
 func (js *JSONSchema) GetTitle() string {
 	return js.schema.Title
 }
 
-func (js *JSONSchema) GetType() (*JSONType, error) {
+// Parse return JSON Schema type
+func (js *JSONSchema) Parse() (*JSONType, error) {
 	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) {
 		t := &JSONType{
-			Format: INTEGER,
+			format: INTEGER,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.Nullable = true
+			t.nullable = true
 		}
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.StringType, js.schema.Type) {
 		t := &JSONType{}
 		if js.schema.Format == schema.FormatDateTime {
-			t.Format = DATETIME
+			t.format = DATETIME
 		} else {
-			t.Format = STRING
+			t.format = STRING
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.Nullable = true
+			t.nullable = true
 		}
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.ObjectType, js.schema.Type) {
 		t := &JSONType{
-			Format: OBJECT,
+			format: OBJECT,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.Nullable = true
+			t.nullable = true
 		}
 		if js.schema.Properties != nil {
 			for key, propSchema := range js.schema.Properties {
-				prop := NewSchema(propSchema)
-				propType, err := prop.GetType()
+				propType, err := NewSchema(propSchema).Parse()
 				if err != nil {
 					return nil, err
 				}
-				t.AddField(&Field{
-					Name: utils.Ucfirst(key),
-					Type: propType,
-					Tag: &JSONTag{
-						Name:      key,
-						OmitEmpty: !js.schema.IsPropRequired(key),
+				t.AddField(&field{
+					name:     utils.Ucfirst(key),
+					jsontype: propType,
+					jsontag: &jsonTag{
+						name:      key,
+						omitEmpty: !js.schema.IsPropRequired(key),
 					},
 				})
 			}
@@ -99,34 +101,33 @@ func (js *JSONSchema) GetType() (*JSONType, error) {
 			return nil, err
 		}
 		t := &JSONType{
-			Format: ARRAY,
+			format: ARRAY,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.Nullable = true
+			t.nullable = true
 		}
-		item := NewSchema(js.schema.Items.Schemas[0])
-		itemType, err := item.GetType()
+		itemType, err := NewSchema(js.schema.Items.Schemas[0]).Parse()
 		if err != nil {
 			return nil, err
 		}
-		t.ItemType = itemType
+		t.itemType = itemType
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.BooleanType, js.schema.Type) {
 		t := &JSONType{
-			Format: BOOLEAN,
+			format: BOOLEAN,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.Nullable = true
+			t.nullable = true
 		}
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.NumberType, js.schema.Type) {
 		t := &JSONType{
-			Format: NUMBER,
+			format: NUMBER,
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.Nullable = true
+			t.nullable = true
 		}
 		return t, nil
 	}

@@ -10,6 +10,7 @@ import (
 	"os"
 )
 
+// Arguments are CUI options
 type Arguments struct {
 	OutputFileName string
 	PackageName    string

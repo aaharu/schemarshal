@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [ "disk" ]
+    },
+    "device": {
+      "type": "string",
+      "pattern": "^/dev/[^/]+(/[^/]+)*$"
+    }
+  },
+  "required": [ "type", "device" ],
+  "additionalProperties": false
+}

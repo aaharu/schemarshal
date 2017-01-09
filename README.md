@@ -30,6 +30,7 @@ OPTIONS
 
 ## TODO
 
+- [ ] support enum
 - [ ] unit tests
 - [ ] write doc
 

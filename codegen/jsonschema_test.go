@@ -12,9 +12,9 @@ import (
 func Test(t *testing.T) {
 	file, _ := os.Open("../test_data/a.json")
 	defer file.Close()
-	js, _ := New(file)
-	jsType, _ := js.GetType()
-	actual := jsType.Generate()
+	js, _ := Read(file)
+	jsType, _ := js.Parse()
+	actual := jsType.generate()
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
 	}

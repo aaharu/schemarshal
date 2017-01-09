@@ -10,10 +10,10 @@ import (
 )
 
 func TestJSONTagOmitEmpty(t *testing.T) {
-	tag := &JSONTag{
-		OmitEmpty: true,
+	tag := &jsonTag{
+		omitEmpty: true,
 	}
-	actual := tag.Generate()
+	actual := tag.generate()
 	expected := []byte("`json:\",omitempty\"`")
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("got %v\nwant %v", string(actual), string(expected))
@@ -21,10 +21,10 @@ func TestJSONTagOmitEmpty(t *testing.T) {
 }
 
 func TestJSONTag(t *testing.T) {
-	tag := &JSONTag{
-		Name: "key",
+	tag := &jsonTag{
+		name: "key",
 	}
-	actual := tag.Generate()
+	actual := tag.generate()
 	expected := []byte("`json:\"key\"`")
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("got %v\nwant %v", actual, expected)

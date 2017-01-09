@@ -12,13 +12,15 @@ import (
 	"github.com/aaharu/schemarshal/version"
 )
 
+// Generator of Go source code from JSON Schema
 type Generator struct {
 	name    string // package nage
 	command string
-	imports []*ImportSpec
-	decls   []*TypeSpec
+	imports []*importSpec
+	decls   []*typeSpec
 }
 
+// NewGenerator create Generator struct
 func NewGenerator(packageName string, command string) *Generator {
 	return &Generator{
 		name:    packageName,
@@ -26,20 +28,29 @@ func NewGenerator(packageName string, command string) *Generator {
 	}
 }
 
-func (g *Generator) AddImport(spec *ImportSpec) {
+// AddImport add an import statement
+func (g *Generator) AddImport(path string, name *string) {
 	if g.imports == nil {
-		g.imports = []*ImportSpec{}
+		g.imports = []*importSpec{}
 	}
-	g.imports = append(g.imports, spec)
+	g.imports = append(g.imports, &importSpec{
+		name: *name,
+		path: path,
+	})
 }
 
-func (g *Generator) AddType(ts *TypeSpec) {
+// AddType add a type statement
+func (g *Generator) AddType(name string, jsonType *JSONType) {
 	if g.decls == nil {
-		g.decls = []*TypeSpec{}
+		g.decls = []*typeSpec{}
 	}
-	g.decls = append(g.decls, ts)
+	g.decls = append(g.decls, &typeSpec{
+		name:     name,
+		jsontype: jsonType,
+	})
 }
 
+// Generate gofmt-ed Go source code
 func (g *Generator) Generate() ([]byte, error) {
 	var buf bytes.Buffer
 
@@ -50,17 +61,17 @@ func (g *Generator) Generate() ([]byte, error) {
 	if len(g.imports) > 1 {
 		buf.WriteString(fmt.Sprintf("import (\n"))
 		for i := range g.imports {
-			buf.WriteString(fmt.Sprintf("%s %s\n", g.imports[i].Name, g.imports[i].Path))
+			buf.WriteString(fmt.Sprintf("%s %s\n", g.imports[i].name, g.imports[i].path))
 		}
 		buf.WriteString(fmt.Sprintf(")\n\n"))
 	} else if len(g.imports) == 1 {
-		buf.WriteString(fmt.Sprintf("import %s %s\n\n", g.imports[0].Name, g.imports[0].Path))
+		buf.WriteString(fmt.Sprintf("import %s %s\n\n", g.imports[0].name, g.imports[0].path))
 	}
 
 	if g.decls != nil {
 		for i := range g.decls {
-			buf.WriteString("type " + g.decls[i].Name + " ")
-			buf.Write(g.decls[i].Type.Generate())
+			buf.WriteString("type " + g.decls[i].name + " ")
+			buf.Write(g.decls[i].jsontype.generate())
 			buf.WriteString("\n")
 		}
 	}
@@ -68,20 +79,20 @@ func (g *Generator) Generate() ([]byte, error) {
 	return format.Source(buf.Bytes())
 }
 
-type ImportSpec struct {
-	Name string // ident
-	Path string
+type importSpec struct {
+	name string // ident
+	path string
 }
 
-type TypeSpec struct {
-	Name string // type name
-	Type *JSONType
+type typeSpec struct {
+	name     string // type name
+	jsontype *JSONType
 }
 
-type Format int
+type jsonformat int
 
 const (
-	OBJECT Format = iota
+	OBJECT jsonformat = iota
 	ARRAY
 	STRING
 	BOOLEAN
@@ -91,72 +102,73 @@ const (
 )
 
 type JSONType struct {
-	Format   Format
-	Nullable bool
-	Fields   []*Field // object
-	ItemType *JSONType
+	format   jsonformat
+	nullable bool
+	fields   []*field // object
+	itemType *JSONType
 }
 
-func (t *JSONType) AddField(field *Field) {
-	if t.Fields == nil {
-		t.Fields = []*Field{}
+func (t *JSONType) AddField(f *field) {
+	if t.fields == nil {
+		t.fields = []*field{}
 	}
-	t.Fields = append(t.Fields, field)
+	t.fields = append(t.fields, f)
 }
 
-func (t *JSONType) Generate() []byte {
+func (t *JSONType) generate() []byte {
 	var buf bytes.Buffer
-	if t.Nullable {
+	if t.nullable {
 		buf.WriteString("*")
 	}
-	if t.Format == OBJECT {
-		if t.Fields == nil {
-			buf.WriteString("map[string]interface{}\n")
+	if t.format == OBJECT {
+		if t.fields == nil {
+			buf.WriteString("map[string]interface{}")
 		} else {
 			buf.WriteString("struct {\n")
-			for i := range t.Fields {
-				buf.WriteString(t.Fields[i].Name)
+			for i := range t.fields {
+				buf.WriteString(t.fields[i].name)
 				buf.WriteString(" ")
-				buf.Write(t.Fields[i].Type.Generate())
+				buf.Write(t.fields[i].jsontype.generate())
 				buf.WriteString(" ")
-				buf.Write(t.Fields[i].Tag.Generate())
+				buf.Write(t.fields[i].jsontag.generate())
 				buf.WriteString("\n")
 			}
 			buf.WriteString("}")
 		}
-	} else if t.Format == ARRAY {
+	} else if t.format == ARRAY {
 		buf.WriteString("[]")
-		buf.Write(t.ItemType.Generate())
-	} else if t.Format == STRING {
+		buf.Write(t.itemType.generate())
+	} else if t.format == STRING {
 		buf.WriteString("string")
-	} else if t.Format == BOOLEAN {
+	} else if t.format == BOOLEAN {
 		buf.WriteString("bool")
-	} else if t.Format == NUMBER {
+	} else if t.format == NUMBER {
 		buf.WriteString("float64")
-	} else if t.Format == INTEGER {
+	} else if t.format == INTEGER {
 		buf.WriteString("int")
-	} else if t.Format == DATETIME {
+	} else if t.format == DATETIME {
 		buf.WriteString("time.Time")
 	}
 	return buf.Bytes()
 }
 
-type Field struct {
-	Name string
-	Type *JSONType
-	Tag  *JSONTag
+type field struct {
+	name     string
+	jsontype *JSONType
+	jsontag  *jsonTag
 }
 
-type JSONTag struct {
-	Name      string
-	OmitEmpty bool
+type jsonTag struct {
+	name      string
+	omitEmpty bool
 }
 
-func (t *JSONTag) Generate() []byte {
+// Generate JSON tag code
+func (t *jsonTag) generate() []byte {
 	var buf bytes.Buffer
 	buf.WriteString("`json:\"")
-	buf.WriteString(t.Name)
-	if t.OmitEmpty {
+	buf.WriteString(t.name)
+	if t.omitEmpty {
 		buf.WriteString(",omitempty")
 	}
 	buf.WriteString("\"`")

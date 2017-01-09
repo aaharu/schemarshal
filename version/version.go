@@ -9,6 +9,7 @@ import "fmt"
 // Version of schemarshal
 const Version = "0.2.1"
 
+// String return `<name> <version>`
 func String() string {
 	return fmt.Sprintf("schemarshal %s", Version)
 }
