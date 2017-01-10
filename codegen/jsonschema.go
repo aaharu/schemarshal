@@ -22,8 +22,8 @@ type JSONSchema struct {
 	schema *schema.Schema
 }
 
-// Read and initialize struct
-func Read(input io.Reader) (*JSONSchema, error) {
+// ReadSchema and initialize struct
+func ReadSchema(input io.Reader) (*JSONSchema, error) {
 	schema, err := schema.Read(input)
 	if err != nil {
 		return nil, err
@@ -47,38 +47,50 @@ func (js *JSONSchema) GetTitle() string {
 }
 
 // Parse return JSON Schema type
-func (js *JSONSchema) Parse() (*JSONType, error) {
-	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) {
-		t := &JSONType{
-			format: INTEGER,
+func (js *JSONSchema) Parse(fieldName string) (*JSONType, error) {
+	t := &JSONType{}
+	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) ||
+		inPrimitiveTypes(schema.BooleanType, js.schema.Type) ||
+		inPrimitiveTypes(schema.NumberType, js.schema.Type) {
+		if inPrimitiveTypes(schema.IntegerType, js.schema.Type) {
+			t.format = formatInteger
+		} else if inPrimitiveTypes(schema.BooleanType, js.schema.Type) {
+			t.format = formatBoolean
+		} else {
+			t.format = formatNumber
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
+		if js.schema.Enum != nil {
+			enumList[fieldName] = js.schema.Enum
+		}
+		t.enumType = fieldName
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.StringType, js.schema.Type) {
-		t := &JSONType{}
 		if js.schema.Format == schema.FormatDateTime {
-			t.format = DATETIME
+			t.format = formatDatetime
 		} else {
-			t.format = STRING
+			t.format = formatString
 		}
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
+		if js.schema.Enum != nil {
+			enumList[fieldName] = js.schema.Enum
+		}
+		t.enumType = fieldName
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.ObjectType, js.schema.Type) {
-		t := &JSONType{
-			format: OBJECT,
-		}
+		t.format = formatObject
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
 		if js.schema.Properties != nil {
 			for key, propSchema := range js.schema.Properties {
-				propType, err := NewSchema(propSchema).Parse()
+				propType, err := NewSchema(propSchema).Parse(utils.Ucfirst(key))
 				if err != nil {
 					return nil, err
 				}
@@ -92,47 +104,31 @@ func (js *JSONSchema) Parse() (*JSONType, error) {
 				})
 			}
 		}
+		if js.schema.Enum != nil {
+			enumList[fieldName] = js.schema.Enum
+		}
+		t.enumType = fieldName
 		return t, nil
 	}
 	if inPrimitiveTypes(schema.ArrayType, js.schema.Type) {
 		if js.schema.Items.TupleMode {
 			// unsupported
 			err := fmt.Errorf("unsupported type %v", js.schema.Items)
-			return nil, err
+			return t, err
 		}
-		t := &JSONType{
-			format: ARRAY,
-		}
+		t.format = formatArray
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
-		itemType, err := NewSchema(js.schema.Items.Schemas[0]).Parse()
+		itemType, err := NewSchema(js.schema.Items.Schemas[0]).Parse("")
 		if err != nil {
 			return nil, err
 		}
 		t.itemType = itemType
 		return t, nil
 	}
-	if inPrimitiveTypes(schema.BooleanType, js.schema.Type) {
-		t := &JSONType{
-			format: BOOLEAN,
-		}
-		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.nullable = true
-		}
-		return t, nil
-	}
-	if inPrimitiveTypes(schema.NumberType, js.schema.Type) {
-		t := &JSONType{
-			format: NUMBER,
-		}
-		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.nullable = true
-		}
-		return t, nil
-	}
 	err := fmt.Errorf("unsupported type %v", js.schema.Type)
-	return nil, err
+	return t, err
 }
 
 func inPrimitiveTypes(needle schema.PrimitiveType, haystack schema.PrimitiveTypes) bool {

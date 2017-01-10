@@ -36,6 +36,17 @@
           },
           "code": {
             "type": "integer"
+          },
+          "hoge": {
+            "type": "object",
+            "properties": {
+              "aaa": {
+                "type": "boolean"
+              }
+            }
+          },
+          "fuga": {
+            "type": "object"
           }
         },
         "required": [
