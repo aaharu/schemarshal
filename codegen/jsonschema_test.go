@@ -7,13 +7,26 @@ package codegen
 import (
 	"os"
 	"testing"
+
+	"github.com/aaharu/schemarshal/utils"
 )
 
-func Test(t *testing.T) {
+func TestSample1(t *testing.T) {
 	file, _ := os.Open("../test_data/a.json")
 	defer file.Close()
-	js, _ := Read(file)
-	jsType, _ := js.Parse()
+	js, _ := ReadSchema(file)
+	jsType, _ := js.Parse(utils.Ucfirst(utils.FileName(file)))
+	actual := jsType.generate()
+	if len(actual) < 1 {
+		t.Errorf("got %v\n", string(actual))
+	}
+}
+
+func TestSample2(t *testing.T) {
+	file, _ := os.Open("../test_data/disk.json")
+	defer file.Close()
+	js, _ := ReadSchema(file)
+	jsType, _ := js.Parse(utils.Ucfirst(utils.FileName(file)))
 	actual := jsType.generate()
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))

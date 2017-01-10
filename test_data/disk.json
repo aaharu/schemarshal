@@ -1,8 +1,9 @@
 {
+  "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "enum": [ "disk" ]
+      "enum": [ "disk", "disk2" ]
     },
     "device": {
       "type": "string",

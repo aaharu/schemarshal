@@ -25,32 +25,6 @@ import (
 	"github.com/aaharu/schemarshal/version"
 )
 
-/*
-TODO: enum対応で以下のようなコードを出力する予定……
-
-type hogehoge int
-
-const (
-	abc hogehoge = iota
-	def
-	a
-	b
-	c
-)
-
-var fuga = []interface{}{"en", "um", true, 1, 0.3}
-
-func (enum hogehoge) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("%v", fuga[enum])), nil
-}
-
-func main() {
-	var enum = c
-	b, _ := json.Marshal(enum)
-	fmt.Println(string(b))
-}
-*/
-
 func main() {
 	args := cui.ParseArguments()
 
@@ -93,19 +67,20 @@ func main() {
 		input = strings.NewReader(string(stdin))
 	}
 
-	js, err := codegen.Read(input)
+	js, err := codegen.ReadSchema(input)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read schema: %s\n", err)
 		os.Exit(1)
 	}
 
 	codeGenerator := codegen.NewGenerator(args.PackageName, strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
-	codeGenerator.AddImport(`"time"`, nil)
+	codeGenerator.AddImport(`"time"`, "")
+	codeGenerator.AddImport(`"fmt"`, "")
 
 	if js.GetTitle() != "" {
 		typeName = js.GetTitle()
 	}
-	gentype, err := js.Parse()
+	gentype, err := js.Parse(utils.Ucfirst(typeName))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse: %s\n", err)
 		os.Exit(1)
@@ -117,6 +92,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "failed to generate: %s\n", err)
 		os.Exit(1)
 	}
+
 	if args.OutputFileName == "" {
 		fmt.Printf("%s\n", src)
 	} else {

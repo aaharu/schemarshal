@@ -8,9 +8,13 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
+	"strings"
 
+	"github.com/aaharu/schemarshal/utils"
 	"github.com/aaharu/schemarshal/version"
 )
+
+var enumList = map[string][]interface{}{} // FIXME
 
 // Generator of Go source code from JSON Schema
 type Generator struct {
@@ -29,12 +33,12 @@ func NewGenerator(packageName string, command string) *Generator {
 }
 
 // AddImport add an import statement
-func (g *Generator) AddImport(path string, name *string) {
+func (g *Generator) AddImport(path string, name string) {
 	if g.imports == nil {
 		g.imports = []*importSpec{}
 	}
 	g.imports = append(g.imports, &importSpec{
-		name: *name,
+		name: name,
 		path: path,
 	})
 }
@@ -76,6 +80,41 @@ func (g *Generator) Generate() ([]byte, error) {
 		}
 	}
 
+	if len(enumList) > 0 {
+		buf.WriteString("\n")
+		for typeName, enum := range enumList {
+			buf.WriteString("type " + typeName + "Enum int\n")
+			buf.WriteString("const (\n")
+			for i := range enum {
+				if i == 0 {
+					buf.WriteString("enum" + utils.Ucfirst(fmt.Sprintf("%v", enum[0])) + " " + typeName + "Enum = iota\n")
+				} else {
+					buf.WriteString("enum" + utils.Ucfirst(fmt.Sprintf("%v", enum[i])))
+				}
+			}
+			buf.WriteString(")\n")
+			buf.WriteString("func (enum " + typeName + "Enum) MarshalJSON() ([]byte, error) {\n")
+
+			buf.WriteString("var var" + typeName + " = []interface{}{")
+			for i := range enum {
+				switch v := enum[i].(type) {
+				case string:
+					buf.WriteString(`"`)
+					buf.WriteString(strings.Replace(v, `"`, `\"`, -1))
+					buf.WriteString(`"`)
+				default:
+					buf.WriteString(fmt.Sprintf("%v", v))
+				}
+				buf.WriteString(",")
+			}
+			buf.WriteString("}\n")
+
+			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", var" + typeName + "[enum])), nil")
+
+			buf.WriteString("}\n\n")
+		}
+	}
+
 	return format.Source(buf.Bytes())
 }
 
@@ -89,25 +128,28 @@ type typeSpec struct {
 	jsontype *JSONType
 }
 
-type jsonformat int
+type jsonFormat int
 
 const (
-	OBJECT jsonformat = iota
-	ARRAY
-	STRING
-	BOOLEAN
-	NUMBER
-	INTEGER
-	DATETIME
+	formatObject jsonFormat = iota
+	formatArray
+	formatString
+	formatBoolean
+	formatNumber
+	formatInteger
+	formatDatetime
 )
 
+// JSONType ...
 type JSONType struct {
-	format   jsonformat
+	format   jsonFormat
 	nullable bool
-	fields   []*field // object
-	itemType *JSONType
+	fields   []*field  // only object
+	itemType *JSONType // only array
+	enumType string
 }
 
+// AddField ...
 func (t *JSONType) AddField(f *field) {
 	if t.fields == nil {
 		t.fields = []*field{}
@@ -120,7 +162,7 @@ func (t *JSONType) generate() []byte {
 	if t.nullable {
 		buf.WriteString("*")
 	}
-	if t.format == OBJECT {
+	if t.format == formatObject {
 		if t.fields == nil {
 			buf.WriteString("map[string]interface{}")
 		} else {
@@ -135,18 +177,18 @@ func (t *JSONType) generate() []byte {
 			}
 			buf.WriteString("}")
 		}
-	} else if t.format == ARRAY {
+	} else if t.format == formatArray {
 		buf.WriteString("[]")
 		buf.Write(t.itemType.generate())
-	} else if t.format == STRING {
+	} else if t.format == formatString {
 		buf.WriteString("string")
-	} else if t.format == BOOLEAN {
+	} else if t.format == formatBoolean {
 		buf.WriteString("bool")
-	} else if t.format == NUMBER {
+	} else if t.format == formatNumber {
 		buf.WriteString("float64")
-	} else if t.format == INTEGER {
+	} else if t.format == formatInteger {
 		buf.WriteString("int")
-	} else if t.format == DATETIME {
+	} else if t.format == formatDatetime {
 		buf.WriteString("time.Time")
 	}
 	return buf.Bytes()
