@@ -87,14 +87,13 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("const (\n")
 			for i := range enum {
 				if i == 0 {
-					buf.WriteString("enum" + utils.Ucfirst(fmt.Sprintf("%v", enum[0])) + " " + typeName + "Enum = iota\n")
+					buf.WriteString("enum" + utils.UpperCamelCase(fmt.Sprintf("%v", enum[0])) + " " + typeName + "Enum = iota\n")
 				} else {
-					buf.WriteString("enum" + utils.Ucfirst(fmt.Sprintf("%v", enum[i])))
+					buf.WriteString("enum" + utils.UpperCamelCase(fmt.Sprintf("%v", enum[i])) + "\n")
 				}
 			}
 			buf.WriteString(")\n")
 			buf.WriteString("func (enum " + typeName + "Enum) MarshalJSON() ([]byte, error) {\n")
-
 			buf.WriteString("var var" + typeName + " = []interface{}{")
 			for i := range enum {
 				switch v := enum[i].(type) {
@@ -108,9 +107,12 @@ func (g *Generator) Generate() ([]byte, error) {
 				buf.WriteString(",")
 			}
 			buf.WriteString("}\n")
-
-			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", var" + typeName + "[enum])), nil")
-
+			buf.WriteString("switch v:= var" + typeName + "[enum].(type) {\n")
+			buf.WriteString("case string:\n")
+			buf.WriteString("return []byte(fmt.Sprintf(\"\\\"%v\\\"\", strings.Replace(v, `\"`, `\\\"`, -1))), nil\n")
+			buf.WriteString("default:\n")
+			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", v)), nil\n")
+			buf.WriteString("}\n")
 			buf.WriteString("}\n\n")
 		}
 	}

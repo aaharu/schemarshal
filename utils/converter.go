@@ -10,8 +10,10 @@ import (
 	"strings"
 )
 
-// Ucfirst Upper case first character
-func Ucfirst(str string) string {
+// UpperCamelCase ...
+func UpperCamelCase(str string) string {
+	str = strings.Replace(str, "-", " ", -1)
+	str = strings.Replace(str, "_", " ", -1)
 	return strings.Replace(strings.Title(str), " ", "", -1)
 }
 

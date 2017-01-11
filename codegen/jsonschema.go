@@ -90,12 +90,12 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, error) {
 		}
 		if js.schema.Properties != nil {
 			for key, propSchema := range js.schema.Properties {
-				propType, err := NewSchema(propSchema).Parse(utils.Ucfirst(key))
+				propType, err := NewSchema(propSchema).Parse(utils.UpperCamelCase(key))
 				if err != nil {
 					return nil, err
 				}
 				t.AddField(&field{
-					name:     utils.Ucfirst(key),
+					name:     utils.UpperCamelCase(key),
 					jsontype: propType,
 					jsontag: &jsonTag{
 						name:      key,

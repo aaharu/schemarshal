@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-func TestUcfirst(t *testing.T) {
-	actual := Ucfirst("address")
+func TestUpperCamelCase(t *testing.T) {
+	actual := UpperCamelCase("address")
 	expected := "Address"
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)

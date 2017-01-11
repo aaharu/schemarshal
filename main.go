@@ -76,16 +76,17 @@ func main() {
 	codeGenerator := codegen.NewGenerator(args.PackageName, strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
 	codeGenerator.AddImport(`"time"`, "")
 	codeGenerator.AddImport(`"fmt"`, "")
+	codeGenerator.AddImport(`"strings"`, "")
 
 	if js.GetTitle() != "" {
 		typeName = js.GetTitle()
 	}
-	gentype, err := js.Parse(utils.Ucfirst(typeName))
+	gentype, err := js.Parse(utils.UpperCamelCase(typeName))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse: %s\n", err)
 		os.Exit(1)
 	}
-	codeGenerator.AddType(utils.Ucfirst(typeName), gentype)
+	codeGenerator.AddType(utils.UpperCamelCase(typeName), gentype)
 
 	src, err := codeGenerator.Generate()
 	if err != nil {
