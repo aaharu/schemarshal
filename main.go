@@ -35,14 +35,18 @@ func main() {
 
 	var input io.Reader
 	typeName := args.TypeName
-	if terminal.IsTerminal(syscall.Stdin) {
+	if args.InputFileName != "" || terminal.IsTerminal(syscall.Stdin) {
 		// input from file
-		if len(flag.Args()) < 1 {
+		if args.InputFileName == "" && len(flag.Args()) < 1 {
 			cui.Usage()
 			os.Exit(1)
 		}
 
-		inputFile, err := os.Open(flag.Args()[0])
+		inputFileName := args.InputFileName
+		if inputFileName == "" {
+			inputFileName = flag.Args()[0]
+		}
+		inputFile, err := os.Open(inputFileName)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to open schema: %s\n", err)
 			os.Exit(1)

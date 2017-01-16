@@ -5,6 +5,9 @@
 - type name bugs
 - enum bugs
 
+### Added
+- add f,file option
+
 
 ## [0.3.0] - 2017-01-11
 ### Changed

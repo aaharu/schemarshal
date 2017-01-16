@@ -12,6 +12,7 @@ import (
 
 // Arguments are CUI options
 type Arguments struct {
+	InputFileName  string
 	OutputFileName string
 	PackageName    string
 	TypeName       string
@@ -25,6 +26,8 @@ func Usage() {
 	fmt.Fprint(os.Stderr, "OPTIONS\n")
 	fmt.Fprint(os.Stderr, "  -h, -help\n")
 	fmt.Fprint(os.Stderr, "           Show this help message.\n")
+	fmt.Fprint(os.Stderr, "  -f <file>, -file <file>\n")
+	fmt.Fprintf(os.Stderr, "           %s\n", flag.Lookup("f").Usage)
 	fmt.Fprint(os.Stderr, "  -o <file>, -output <file>\n")
 	fmt.Fprintf(os.Stderr, "           %s\n", flag.Lookup("o").Usage)
 	fmt.Fprint(os.Stderr, "  -p <package>, -package <package>\n")
@@ -39,6 +42,8 @@ func Usage() {
 func ParseArguments() *Arguments {
 	args := &Arguments{}
 	flag.Usage = Usage
+	flag.StringVar(&args.InputFileName, "f", "", "Input file name.")
+	flag.StringVar(&args.InputFileName, "file", "", "Input file name.")
 	flag.StringVar(&args.OutputFileName, "o", "", "Write output to file instead of stdout.")
 	flag.StringVar(&args.OutputFileName, "output", "", "Write output to file instead of stdout.")
 	flag.StringVar(&args.PackageName, "p", "main", "Package name for output. (default `main`)")

@@ -18,6 +18,8 @@ SYNOPSIS
 OPTIONS
   -h, -help
            Show this help message.
+  -f <file>, -file <file>
+           Input file name.
   -o <file>, -output <file>
            Write output to file instead of stdout.
   -p <package>, -package <package>
