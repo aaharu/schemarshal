@@ -83,17 +83,18 @@ func (g *Generator) Generate() ([]byte, error) {
 	if len(enumList) > 0 {
 		buf.WriteString("\n")
 		for typeName, enum := range enumList {
-			buf.WriteString("type " + typeName + "Enum int\n")
+			enumName := typeName + "Enum"
+			buf.WriteString("type " + enumName + " int\n")
 			buf.WriteString("const (\n")
 			for i := range enum {
 				if i == 0 {
-					buf.WriteString("enum" + utils.UpperCamelCase(fmt.Sprintf("%v", enum[0])) + " " + typeName + "Enum = iota\n")
+					buf.WriteString(enumName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[0])) + " " + enumName + " = iota\n")
 				} else {
-					buf.WriteString("enum" + utils.UpperCamelCase(fmt.Sprintf("%v", enum[i])) + "\n")
+					buf.WriteString(enumName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[i])) + "\n")
 				}
 			}
 			buf.WriteString(")\n")
-			buf.WriteString("func (enum " + typeName + "Enum) MarshalJSON() ([]byte, error) {\n")
+			buf.WriteString("func (enum " + enumName + ") MarshalJSON() ([]byte, error) {\n")
 			buf.WriteString("var var" + typeName + " = []interface{}{")
 			for i := range enum {
 				switch v := enum[i].(type) {
