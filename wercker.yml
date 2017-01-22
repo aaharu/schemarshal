@@ -62,3 +62,4 @@ deploy:
         token: ${GITHUB_TOKEN}
         input: dist
         version: ${RELEASE_TAG}
+        replace: true
