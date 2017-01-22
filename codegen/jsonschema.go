@@ -47,9 +47,10 @@ func (js *JSONSchema) GetTitle() string {
 }
 
 // Parse returns JSON Schema type and enumList
-func (js *JSONSchema) Parse(fieldName string) (*JSONType, map[string][]interface{}, error) {
+func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, error) {
 	var (
-		enumList = map[string][]interface{}{}
+		enumList = EnumSpec{}
+		imports  = ImportSpec{}
 		t        = &JSONType{}
 	)
 	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) ||
@@ -70,16 +71,19 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, map[string][]interface
 			if _, ok := enumList[enumName]; ok == true {
 				// FIXME: unsupported
 				err := fmt.Errorf("unsupported json")
-				return t, enumList, err
+				return t, enumList, imports, err
 			}
 			enumList[enumName] = js.schema.Enum
 			t.enumType = enumName
+			imports[`"strings"`] = ""
+			imports[`"fmt"`] = ""
 		}
-		return t, enumList, nil
+		return t, enumList, imports, nil
 	}
 	if inPrimitiveTypes(schema.StringType, js.schema.Type) {
 		if js.schema.Format == schema.FormatDateTime {
 			t.format = formatDatetime
+			imports[`"time"`] = ""
 		} else {
 			t.format = formatString
 		}
@@ -87,10 +91,13 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, map[string][]interface
 			t.nullable = true
 		}
 		if js.schema.Enum != nil {
-			enumList[fieldName] = js.schema.Enum
-			t.enumType = utils.EnumTypeName(fieldName)
+			enumName := utils.EnumTypeName(fieldName)
+			enumList[enumName] = js.schema.Enum
+			t.enumType = enumName
+			imports[`"strings"`] = ""
+			imports[`"fmt"`] = ""
 		}
-		return t, enumList, nil
+		return t, enumList, imports, nil
 	}
 	if inPrimitiveTypes(schema.ObjectType, js.schema.Type) {
 		t.format = formatObject
@@ -99,9 +106,9 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, map[string][]interface
 		}
 		if js.schema.Properties != nil {
 			for key, propSchema := range js.schema.Properties {
-				propType, propEnumList, err := NewSchema(propSchema).Parse(utils.UpperCamelCase(key))
+				propType, propEnumList, propImports, err := NewSchema(propSchema).Parse(utils.UpperCamelCase(key))
 				if err != nil {
-					return nil, nil, err
+					return nil, nil, nil, err
 				}
 				t.addField(&field{
 					name:     utils.UpperCamelCase(key),
@@ -115,37 +122,46 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, map[string][]interface
 					if _, ok := enumList[k]; ok == true {
 						// FIXME: unsupported
 						err := fmt.Errorf("unsupported json")
-						return t, enumList, err
+						return t, enumList, imports, err
 					}
 					enumList[k] = v
+				}
+				for k, v := range propImports {
+					imports[k] = v
 				}
 			}
 		}
 		if js.schema.Enum != nil {
-			enumList[fieldName] = js.schema.Enum
-			t.enumType = utils.EnumTypeName(fieldName)
+			enumName := utils.EnumTypeName(fieldName)
+			enumList[enumName] = js.schema.Enum
+			t.enumType = enumName
+			imports[`"strings"`] = ""
+			imports[`"fmt"`] = ""
 		}
-		return t, enumList, nil
+		return t, enumList, imports, nil
 	}
 	if inPrimitiveTypes(schema.ArrayType, js.schema.Type) {
 		if js.schema.Items.TupleMode {
 			// unsupported
 			err := fmt.Errorf("unsupported type %v", js.schema.Items)
-			return t, enumList, err
+			return t, enumList, imports, err
 		}
 		t.format = formatArray
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
-		itemType, _, err := NewSchema(js.schema.Items.Schemas[0]).Parse("")
+		itemType, _, itemImports, err := NewSchema(js.schema.Items.Schemas[0]).Parse("")
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		t.itemType = itemType
-		return t, enumList, nil
+		for k, v := range itemImports {
+			imports[k] = v
+		}
+		return t, enumList, imports, nil
 	}
 	err := fmt.Errorf("unsupported type %v", js.schema.Type)
-	return t, enumList, err
+	return t, enumList, imports, err
 }
 
 func inPrimitiveTypes(needle schema.PrimitiveType, haystack schema.PrimitiveTypes) bool {

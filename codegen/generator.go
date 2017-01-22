@@ -18,9 +18,9 @@ import (
 type Generator struct {
 	name     string // package nage
 	command  string
-	imports  []*importSpec
+	imports  ImportSpec
 	decls    []*typeSpec
-	enumList map[string][]interface{}
+	enumList EnumSpec
 }
 
 // NewGenerator create Generator struct
@@ -31,19 +31,8 @@ func NewGenerator(packageName string, command string) *Generator {
 	}
 }
 
-// AddImport add an import statement
-func (g *Generator) AddImport(path string, name string) {
-	if g.imports == nil {
-		g.imports = []*importSpec{}
-	}
-	g.imports = append(g.imports, &importSpec{
-		name: name,
-		path: path,
-	})
-}
-
 // AddType add a type statement
-func (g *Generator) AddType(name string, jsonType *JSONType, enumList map[string][]interface{}) {
+func (g *Generator) AddType(name string, jsonType *JSONType, enumList EnumSpec, imp ImportSpec) {
 	if g.decls == nil {
 		g.decls = []*typeSpec{}
 	}
@@ -52,6 +41,7 @@ func (g *Generator) AddType(name string, jsonType *JSONType, enumList map[string
 		jsontype: jsonType,
 	})
 	g.enumList = enumList
+	g.imports = imp
 }
 
 // Generate gofmt-ed Go source code
@@ -64,12 +54,14 @@ func (g *Generator) Generate() ([]byte, error) {
 
 	if len(g.imports) > 1 {
 		buf.WriteString("import (\n")
-		for i := range g.imports {
-			buf.WriteString(fmt.Sprintf("%s %s\n", g.imports[i].name, g.imports[i].path))
+		for path, name := range g.imports {
+			buf.WriteString(fmt.Sprintf("%s %s\n", name, path))
 		}
 		buf.WriteString(")\n\n")
 	} else if len(g.imports) == 1 {
-		buf.WriteString(fmt.Sprintf("import %s %s\n\n", g.imports[0].name, g.imports[0].path))
+		for path, name := range g.imports {
+			buf.WriteString(fmt.Sprintf("import %s %s\n\n", name, path))
+		}
 	}
 
 	if g.decls != nil {
@@ -120,15 +112,14 @@ func (g *Generator) Generate() ([]byte, error) {
 	return format.Source(buf.Bytes())
 }
 
-type importSpec struct {
-	name string // ident
-	path string
-}
+type ImportSpec map[string]string
 
 type typeSpec struct {
 	name     string // type name
 	jsontype *JSONType
 }
+
+type EnumSpec map[string][]interface{}
 
 type jsonFormat int
 
@@ -142,7 +133,6 @@ const (
 	formatDatetime
 )
 
-// JSONType ...
 type JSONType struct {
 	format   jsonFormat
 	nullable bool

@@ -41,13 +41,11 @@ schemarshal -p sample test_data/a.json
 
 package sample
 
-import (
-	"fmt"
-	"strings"
-	"time"
-)
+import "time"
 
 type A struct {
+	Test        []int     `json:"test,omitempty"`
+	Test2       time.Time `json:"test2,omitempty"`
 	PhoneNumber []struct {
 		Hoge struct {
 			Aaa bool `json:"aaa,omitempty"`
@@ -57,11 +55,9 @@ type A struct {
 		Code     int                    `json:"code"`
 	} `json:"phoneNumber"`
 	Address struct {
-		StreetAddress string  `json:"streetAddress"`
 		City          *string `json:"city"`
+		StreetAddress string  `json:"streetAddress"`
 	} `json:"address"`
-	Test  []int     `json:"test,omitempty"`
-	Test2 time.Time `json:"test2,omitempty"`
 }
 
 ```
@@ -78,12 +74,11 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 )
 
-type T struct {
-	Type   TypeEnum `json:"type"`
+type SchemarshalType struct {
 	Device string   `json:"device"`
+	Type   TypeEnum `json:"type"`
 }
 
 type TypeEnum int
