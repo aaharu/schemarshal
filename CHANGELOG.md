@@ -1,12 +1,15 @@
 # Change Log
 
-## [Unreleased]
+## [0.4.0] - 2017-01-23
 ### Fixed
 - type name bugs
 - enum bugs
 
 ### Added
 - add f,file option
+
+### Changed
+- optimize import
 
 
 ## [0.3.0] - 2017-01-11
@@ -41,7 +44,7 @@
 - pre-release
 
 
-[Unreleased]: https://github.com/aaharu/schemarshal/compare/0.3.0...HEAD
+[0.3.1]: https://github.com/aaharu/schemarshal/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/aaharu/schemarshal/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/aaharu/schemarshal/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/aaharu/schemarshal/compare/0.1.0...0.2.0
