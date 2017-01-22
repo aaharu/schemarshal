@@ -54,6 +54,9 @@ deploy:
     - script:
         name: restore release tag
         code: |
+          if [ $(fgrep -c "## [Unreleased]" CHANGELOG.md) -eq 1 ]; then
+            exit 1
+          fi
           export RELEASE_TAG=$(cat tag.out)
     - tcnksm/ghr:
         token: ${GITHUB_TOKEN}
