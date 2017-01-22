@@ -14,14 +14,13 @@ import (
 	"github.com/aaharu/schemarshal/version"
 )
 
-var enumList = map[string][]interface{}{} // FIXME
-
 // Generator of Go source code from JSON Schema
 type Generator struct {
-	name    string // package nage
-	command string
-	imports []*importSpec
-	decls   []*typeSpec
+	name     string // package nage
+	command  string
+	imports  []*importSpec
+	decls    []*typeSpec
+	enumList map[string][]interface{}
 }
 
 // NewGenerator create Generator struct
@@ -44,7 +43,7 @@ func (g *Generator) AddImport(path string, name string) {
 }
 
 // AddType add a type statement
-func (g *Generator) AddType(name string, jsonType *JSONType) {
+func (g *Generator) AddType(name string, jsonType *JSONType, enumList map[string][]interface{}) {
 	if g.decls == nil {
 		g.decls = []*typeSpec{}
 	}
@@ -52,6 +51,7 @@ func (g *Generator) AddType(name string, jsonType *JSONType) {
 		name:     name,
 		jsontype: jsonType,
 	})
+	g.enumList = enumList
 }
 
 // Generate gofmt-ed Go source code
@@ -80,22 +80,21 @@ func (g *Generator) Generate() ([]byte, error) {
 		}
 	}
 
-	if len(enumList) > 0 {
+	if g.enumList != nil && len(g.enumList) > 0 {
 		buf.WriteString("\n")
-		for typeName, enum := range enumList {
-			enumName := typeName + "Enum"
-			buf.WriteString("type " + enumName + " int\n")
+		for typeName, enum := range g.enumList {
+			buf.WriteString("type " + typeName + " int\n")
 			buf.WriteString("const (\n")
 			for i := range enum {
 				if i == 0 {
-					buf.WriteString(enumName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[0])) + " " + enumName + " = iota\n")
+					buf.WriteString(typeName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[0])) + " " + typeName + " = iota\n")
 				} else {
-					buf.WriteString(enumName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[i])) + "\n")
+					buf.WriteString(typeName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[i])) + "\n")
 				}
 			}
 			buf.WriteString(")\n")
-			buf.WriteString("func (enum " + enumName + ") MarshalJSON() ([]byte, error) {\n")
-			buf.WriteString("var var" + typeName + " = []interface{}{")
+			buf.WriteString("func (enum " + typeName + ") MarshalJSON() ([]byte, error) {\n")
+			buf.WriteString("var enumList = []interface{}{")
 			for i := range enum {
 				switch v := enum[i].(type) {
 				case string:
@@ -108,7 +107,7 @@ func (g *Generator) Generate() ([]byte, error) {
 				buf.WriteString(",")
 			}
 			buf.WriteString("}\n")
-			buf.WriteString("switch v:= var" + typeName + "[enum].(type) {\n")
+			buf.WriteString("switch v:= enumList[enum].(type) {\n")
 			buf.WriteString("case string:\n")
 			buf.WriteString("return []byte(fmt.Sprintf(\"\\\"%v\\\"\", strings.Replace(v, `\"`, `\\\"`, -1))), nil\n")
 			buf.WriteString("default:\n")
@@ -147,13 +146,12 @@ const (
 type JSONType struct {
 	format   jsonFormat
 	nullable bool
-	fields   []*field  // only object
-	itemType *JSONType // only array
-	enumType string
+	fields   []*field  // used object only
+	itemType *JSONType // used array only
+	enumType string    // used enum only
 }
 
-// AddField ...
-func (t *JSONType) AddField(f *field) {
+func (t *JSONType) addField(f *field) {
 	if t.fields == nil {
 		t.fields = []*field{}
 	}
@@ -165,7 +163,9 @@ func (t *JSONType) generate() []byte {
 	if t.nullable {
 		buf.WriteString("*")
 	}
-	if t.format == formatObject {
+	if t.enumType != "" {
+		buf.WriteString(t.enumType)
+	} else if t.format == formatObject {
 		if t.fields == nil {
 			buf.WriteString("map[string]interface{}")
 		} else {

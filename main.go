@@ -66,7 +66,8 @@ func main() {
 		}
 
 		if typeName == "" {
-			typeName = "T"
+			// default type name
+			typeName = "SchemarshalType"
 		}
 		input = strings.NewReader(string(stdin))
 	}
@@ -85,12 +86,13 @@ func main() {
 	if js.GetTitle() != "" {
 		typeName = js.GetTitle()
 	}
-	gentype, err := js.Parse(utils.UpperCamelCase(typeName))
+	typeName = utils.UpperCamelCase(typeName)
+	genType, genEnum, err := js.Parse(typeName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse: %s\n", err)
 		os.Exit(1)
 	}
-	codeGenerator.AddType(utils.UpperCamelCase(typeName), gentype)
+	codeGenerator.AddType(typeName, genType, genEnum)
 
 	src, err := codeGenerator.Generate()
 	if err != nil {
