@@ -20,6 +20,9 @@ var (
 func UpperCamelCase(str string) string {
 	matches := notAlphaNum.Split(str, -1)
 	result := ""
+	if len(matches) == 1 {
+		return strings.Title(matches[0])
+	}
 	for i, m := range matches {
 		if i == 0 {
 			result += strings.Title(alpha.FindString(m))

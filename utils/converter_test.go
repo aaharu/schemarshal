@@ -27,6 +27,12 @@ func TestUpperCamelCase(t *testing.T) {
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
+
+	actual = UpperCamelCase("box1")
+	expected = "Box1"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
 }
 
 func TestFileName(t *testing.T) {
