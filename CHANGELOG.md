@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.2] - 2017-02-19
+### Fixed
+- enum name bugs
+
 ## [0.4.1] - 2017-02-19
 ### Fixed
 - enum in array bugs
@@ -49,6 +53,7 @@
 - pre-release
 
 
+[0.4.2]: https://github.com/aaharu/schemarshal/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/aaharu/schemarshal/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/aaharu/schemarshal/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/aaharu/schemarshal/compare/0.2.1...0.3.0

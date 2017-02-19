@@ -71,7 +71,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 			if _, ok := enumList[enumName]; ok == true {
 				// FIXME: unsupported
 				err := fmt.Errorf("unsupported json")
-				return t, enumList, imports, err
+				return nil, nil, nil, err
 			}
 			enumList[enumName] = js.schema.Enum
 			t.enumType = enumName
@@ -106,7 +106,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 		}
 		if js.schema.Properties != nil {
 			for key, propSchema := range js.schema.Properties {
-				propType, propEnumList, propImports, err := NewSchema(propSchema).Parse(utils.UpperCamelCase(key))
+				propType, propEnumList, propImports, err := NewSchema(propSchema).Parse(utils.UpperCamelCase(fieldName + " " + key))
 				if err != nil {
 					return nil, nil, nil, err
 				}
@@ -122,7 +122,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 					if _, ok := enumList[k]; ok == true {
 						// FIXME: unsupported
 						err := fmt.Errorf("unsupported json")
-						return t, enumList, imports, err
+						return nil, nil, nil, err
 					}
 					enumList[k] = v
 				}
@@ -144,7 +144,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 		if js.schema.Items.TupleMode {
 			// unsupported
 			err := fmt.Errorf("unsupported type %v", js.schema.Items)
-			return t, enumList, imports, err
+			return nil, nil, nil, err
 		}
 		t.format = formatArray
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
@@ -159,7 +159,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 			if _, ok := enumList[k]; ok == true {
 				// FIXME: unsupported
 				err := fmt.Errorf("unsupported json")
-				return t, enumList, imports, err
+				return nil, nil, nil, err
 			}
 			enumList[k] = v
 			imports[`"strconv"`] = ""
@@ -171,7 +171,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 		return t, enumList, imports, nil
 	}
 	err := fmt.Errorf("unsupported type %v", js.schema.Type)
-	return t, enumList, imports, err
+	return nil, nil, nil, err
 }
 
 func inPrimitiveTypes(needle schema.PrimitiveType, haystack schema.PrimitiveTypes) bool {
