@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	alpha       = regexp.MustCompile(`[a-zA-Z]+`)
+	alphaNum    = regexp.MustCompile(`[a-zA-Z]+[0-9]*`)
 	notAlphaNum = regexp.MustCompile(`[^a-zA-Z0-9]`)
 )
 
@@ -20,12 +20,9 @@ var (
 func UpperCamelCase(str string) string {
 	matches := notAlphaNum.Split(str, -1)
 	result := ""
-	if len(matches) == 1 {
-		return strings.Title(matches[0])
-	}
 	for i, m := range matches {
 		if i == 0 {
-			result += strings.Title(alpha.FindString(m))
+			result += strings.Title(alphaNum.FindString(m))
 			continue
 		}
 		result += strings.Title(m)
@@ -37,7 +34,7 @@ func UpperCamelCase(str string) string {
 func FileName(file *os.File) string {
 	name := path.Base(file.Name())
 	ext := path.Ext(name)
-	return strings.TrimRight(name, ext)
+	return name[0 : len(name)-len(ext)]
 }
 
 // EnumTypeName returns Go Type literals
