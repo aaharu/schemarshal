@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
-	"strings"
+	"strconv"
 
 	"github.com/aaharu/schemarshal/utils"
 	"github.com/aaharu/schemarshal/version"
@@ -79,29 +79,27 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("const (\n")
 			for i := range enum {
 				if i == 0 {
-					buf.WriteString(typeName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[0])) + " " + typeName + " = iota\n")
+					buf.WriteString(utils.UpperCamelCase(typeName+" "+fmt.Sprintf("%v", enum[0])) + " " + typeName + " = iota\n")
 				} else {
-					buf.WriteString(typeName + utils.UpperCamelCase(fmt.Sprintf("%v", enum[i])) + "\n")
+					buf.WriteString(utils.UpperCamelCase(typeName+" "+fmt.Sprintf("%v", enum[i])) + "\n")
 				}
 			}
 			buf.WriteString(")\n")
 			buf.WriteString("func (enum " + typeName + ") MarshalJSON() ([]byte, error) {\n")
-			buf.WriteString("var enumList = []interface{}{")
+			buf.WriteString("var enumList = []interface{}{\n")
 			for i := range enum {
 				switch v := enum[i].(type) {
 				case string:
-					buf.WriteString(`"`)
-					buf.WriteString(strings.Replace(v, `"`, `\"`, -1))
-					buf.WriteString(`"`)
+					buf.WriteString(strconv.Quote(v))
 				default:
 					buf.WriteString(fmt.Sprintf("%v", v))
 				}
-				buf.WriteString(",")
+				buf.WriteString(",\n")
 			}
 			buf.WriteString("}\n")
 			buf.WriteString("switch v:= enumList[enum].(type) {\n")
 			buf.WriteString("case string:\n")
-			buf.WriteString("return []byte(fmt.Sprintf(\"\\\"%v\\\"\", strings.Replace(v, `\"`, `\\\"`, -1))), nil\n")
+			buf.WriteString("return []byte(strconv.Quote(v)), nil\n")
 			buf.WriteString("default:\n")
 			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", v)), nil\n")
 			buf.WriteString("}\n")

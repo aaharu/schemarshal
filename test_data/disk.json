@@ -3,11 +3,18 @@
   "properties": {
     "type": {
       "type": "string",
-      "enum": [ "disk", "disk2" ]
+      "enum": [ "disk", "disk2", "a\"b\\c" ]
     },
     "device": {
       "type": "string",
       "pattern": "^/dev/[^/]+(/[^/]+)*$"
+    },
+    "test": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [ "x", "y" ]
+      }
     }
   },
   "required": [ "type", "device" ],

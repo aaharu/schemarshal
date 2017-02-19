@@ -75,7 +75,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 			}
 			enumList[enumName] = js.schema.Enum
 			t.enumType = enumName
-			imports[`"strings"`] = ""
+			imports[`"strconv"`] = ""
 			imports[`"fmt"`] = ""
 		}
 		return t, enumList, imports, nil
@@ -94,7 +94,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 			enumName := utils.EnumTypeName(fieldName)
 			enumList[enumName] = js.schema.Enum
 			t.enumType = enumName
-			imports[`"strings"`] = ""
+			imports[`"strconv"`] = ""
 			imports[`"fmt"`] = ""
 		}
 		return t, enumList, imports, nil
@@ -135,7 +135,7 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 			enumName := utils.EnumTypeName(fieldName)
 			enumList[enumName] = js.schema.Enum
 			t.enumType = enumName
-			imports[`"strings"`] = ""
+			imports[`"strconv"`] = ""
 			imports[`"fmt"`] = ""
 		}
 		return t, enumList, imports, nil
@@ -150,11 +150,21 @@ func (js *JSONSchema) Parse(fieldName string) (*JSONType, EnumSpec, ImportSpec, 
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
-		itemType, _, itemImports, err := NewSchema(js.schema.Items.Schemas[0]).Parse("")
+		itemType, itemEnumList, itemImports, err := NewSchema(js.schema.Items.Schemas[0]).Parse(fieldName)
 		if err != nil {
 			return nil, nil, nil, err
 		}
 		t.itemType = itemType
+		for k, v := range itemEnumList {
+			if _, ok := enumList[k]; ok == true {
+				// FIXME: unsupported
+				err := fmt.Errorf("unsupported json")
+				return t, enumList, imports, err
+			}
+			enumList[k] = v
+			imports[`"strconv"`] = ""
+			imports[`"fmt"`] = ""
+		}
 		for k, v := range itemImports {
 			imports[k] = v
 		}

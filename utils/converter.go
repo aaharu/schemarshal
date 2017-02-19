@@ -7,14 +7,27 @@ package utils
 import (
 	"os"
 	"path"
+	"regexp"
 	"strings"
+)
+
+var (
+	alpha       = regexp.MustCompile(`[a-zA-Z]+`)
+	notAlphaNum = regexp.MustCompile(`[^a-zA-Z0-9]`)
 )
 
 // UpperCamelCase returns the string to upper camel case
 func UpperCamelCase(str string) string {
-	str = strings.Replace(str, "-", " ", -1)
-	str = strings.Replace(str, "_", " ", -1)
-	return strings.Replace(strings.Title(str), " ", "", -1)
+	matches := notAlphaNum.Split(str, -1)
+	result := ""
+	for i, m := range matches {
+		if i == 0 {
+			result += strings.Title(alpha.FindString(m))
+			continue
+		}
+		result += strings.Title(m)
+	}
+	return result
 }
 
 // FileName returns file-name without ext

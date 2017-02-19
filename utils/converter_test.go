@@ -10,8 +10,20 @@ import (
 )
 
 func TestUpperCamelCase(t *testing.T) {
-	actual := UpperCamelCase("address")
-	expected := "Address"
+	actual := UpperCamelCase("1st address")
+	expected := "StAddress"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
+
+	actual = UpperCamelCase("address 1st")
+	expected = "Address1st"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
+
+	actual = UpperCamelCase("quote\" slash/")
+	expected = "QuoteSlash"
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
