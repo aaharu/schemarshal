@@ -59,6 +59,9 @@ import (
 	"time"
 )
 
+type ATest3Item struct {
+	Hoge string `json:"hoge"`
+}
 type APhoneNumberItem struct {
 	Location string `json:"location"`
 	Code     int    `json:"code"`
@@ -68,18 +71,15 @@ type APhoneNumberItem struct {
 	} `json:"hoge,omitempty"`
 	Fuga map[string]interface{} `json:"fuga,omitempty"`
 }
-type ATest3Item struct {
-	Hoge string `json:"hoge,omitempty"`
-}
 type A struct {
-	PhoneNumber []APhoneNumberItem `json:"phoneNumber"`
-	Address     struct {
+	Address struct {
 		City          *string `json:"city"`
 		StreetAddress string  `json:"streetAddress"`
 	} `json:"address"`
-	Test  []int        `json:"test,omitempty"`
-	Test2 time.Time    `json:"test2,omitempty"`
-	Test3 []ATest3Item `json:"test3,omitempty"`
+	Test        []int              `json:"test,omitempty"`
+	Test2       time.Time          `json:"test2,omitempty"`
+	Test3       []ATest3Item       `json:"test3,omitempty"`
+	PhoneNumber []APhoneNumberItem `json:"phoneNumber"`
 }
 
 type APhoneNumberHogeBbbEnum int
