@@ -84,12 +84,11 @@ func main() {
 		typeName = js.GetTitle()
 	}
 	typeName = utils.UpperCamelCase(typeName)
-	genType, genEnum, genImports, err := js.Parse(typeName)
+	err = codeGenerator.AddSchema(typeName, js)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse: %s\n", err)
 		os.Exit(1)
 	}
-	codeGenerator.AddType(typeName, genType, genEnum, genImports)
 
 	src, err := codeGenerator.Generate()
 	if err != nil {

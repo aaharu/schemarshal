@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.5] - 2017-03-01
+### Fixed
+- array item struct
+
 ## [0.4.4] - 2017-02-20
 ### Fixed
 - var name bugs
@@ -61,6 +65,7 @@
 - pre-release
 
 
+[0.4.5]: https://github.com/aaharu/schemarshal/compare/0.4.4...0.4.5
 [0.4.4]: https://github.com/aaharu/schemarshal/compare/0.4.3...0.4.4
 [0.4.3]: https://github.com/aaharu/schemarshal/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/aaharu/schemarshal/compare/0.4.1...0.4.2

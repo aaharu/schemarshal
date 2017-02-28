@@ -26,22 +26,29 @@ type Generator struct {
 // NewGenerator create Generator struct
 func NewGenerator(packageName string, command string) *Generator {
 	return &Generator{
-		name:    packageName,
-		command: command,
+		name:     packageName,
+		command:  command,
+		imports:  ImportSpec{},
+		decls:    []*typeSpec{},
+		enumList: EnumSpec{},
 	}
 }
 
 // AddType add a type statement
-func (g *Generator) AddType(name string, jsonType *JSONType, enumList EnumSpec, imp ImportSpec) {
-	if g.decls == nil {
-		g.decls = []*typeSpec{}
-	}
+func (g *Generator) AddType(name string, jsonType *JSONType) {
 	g.decls = append(g.decls, &typeSpec{
 		name:     name,
 		jsontype: jsonType,
 	})
-	g.enumList = enumList
-	g.imports = imp
+}
+
+func (g *Generator) AddSchema(name string, js *JSONSchema) error {
+	genType, err := js.Parse(name, g)
+	if err != nil {
+		return err
+	}
+	g.AddType(name, genType)
+	return nil
 }
 
 // Generate gofmt-ed Go source code
@@ -132,11 +139,12 @@ const (
 )
 
 type JSONType struct {
-	format   jsonFormat
-	nullable bool
-	fields   []*field  // used object only
-	itemType *JSONType // used array only
-	enumType string    // used enum only
+	format       jsonFormat
+	nullable     bool
+	fields       []*field  // object has
+	itemType     *JSONType // array has
+	itemTypeName string    // object's array has
+	enumType     string    // enum has
 }
 
 func (t *JSONType) addField(f *field) {
@@ -170,7 +178,11 @@ func (t *JSONType) generate() []byte {
 		}
 	} else if t.format == formatArray {
 		buf.WriteString("[]")
-		buf.Write(t.itemType.generate())
+		if t.itemTypeName != "" {
+			buf.WriteString(t.itemTypeName)
+		} else {
+			buf.Write(t.itemType.generate())
+		}
 	} else if t.format == formatString {
 		buf.WriteString("string")
 	} else if t.format == formatBoolean {
