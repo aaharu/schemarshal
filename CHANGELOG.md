@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.4.6] - 2017-03-20
+### Fixed
+- stdin error
+
+### Changed
+- code generated comments
+
 ## [0.4.5] - 2017-03-01
 ### Fixed
 - array item struct
@@ -65,6 +72,7 @@
 - pre-release
 
 
+[0.4.6]: https://github.com/aaharu/schemarshal/compare/0.4.5...0.4.6
 [0.4.5]: https://github.com/aaharu/schemarshal/compare/0.4.4...0.4.5
 [0.4.4]: https://github.com/aaharu/schemarshal/compare/0.4.3...0.4.4
 [0.4.3]: https://github.com/aaharu/schemarshal/compare/0.4.2...0.4.3

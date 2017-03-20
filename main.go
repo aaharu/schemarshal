@@ -35,7 +35,7 @@ func main() {
 
 	var input io.Reader
 	typeName := args.TypeName
-	if args.InputFileName != "" || terminal.IsTerminal(syscall.Stdin) {
+	if args.InputFileName != "" || terminal.IsTerminal(int(syscall.Stdin)) {
 		// input from file
 		if args.InputFileName == "" && len(flag.Args()) < 1 {
 			cui.Usage()

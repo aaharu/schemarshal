@@ -146,7 +146,7 @@ func (js *JSONSchema) Parse(fieldName string, generator *Generator) (*JSONType, 
 		if itemType.format == formatObject {
 			itemFieldName := utils.UpperCamelCase(fieldName + " Item")
 			t.itemTypeName = itemFieldName
-			generator.AddType(itemFieldName, itemType)
+			generator.addType(itemFieldName, itemType)
 		}
 		return t, nil
 	}
