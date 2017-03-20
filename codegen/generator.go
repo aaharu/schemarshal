@@ -34,6 +34,7 @@ func NewGenerator(packageName string, command string) *Generator {
 	}
 }
 
+// addType add a type statement
 func (g *Generator) addType(name string, jsonType *JSONType) {
 	g.decls = append(g.decls, &typeSpec{
 		name:     name,
@@ -43,7 +44,7 @@ func (g *Generator) addType(name string, jsonType *JSONType) {
 
 // AddSchema add JSONSchema to Generator
 func (g *Generator) AddSchema(name string, js *JSONSchema) error {
-	genType, err := js.Parse(name, g)
+	genType, err := js.parse(name, g)
 	if err != nil {
 		return err
 	}

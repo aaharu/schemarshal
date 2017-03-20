@@ -49,8 +49,8 @@ func (js *JSONSchema) GetTitle() string {
 	return js.schema.Title
 }
 
-// Parse returns JSON Schema type
-func (js *JSONSchema) Parse(fieldName string, generator *Generator) (*JSONType, error) {
+// parse returns JSON Schema type
+func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, error) {
 	var t = &JSONType{}
 	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) ||
 		inPrimitiveTypes(schema.BooleanType, js.schema.Type) ||
@@ -105,7 +105,7 @@ func (js *JSONSchema) Parse(fieldName string, generator *Generator) (*JSONType, 
 		}
 		if js.schema.Properties != nil {
 			for key, propSchema := range js.schema.Properties {
-				propType, err := NewSchema(propSchema).Parse(utils.UpperCamelCase(fieldName+" "+key), generator)
+				propType, err := NewSchema(propSchema).parse(utils.UpperCamelCase(fieldName+" "+key), generator)
 				if err != nil {
 					return nil, err
 				}
@@ -138,7 +138,7 @@ func (js *JSONSchema) Parse(fieldName string, generator *Generator) (*JSONType, 
 		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 			t.nullable = true
 		}
-		itemType, err := NewSchema(js.schema.Items.Schemas[0]).Parse(fieldName, generator)
+		itemType, err := NewSchema(js.schema.Items.Schemas[0]).parse(fieldName, generator)
 		if err != nil {
 			return nil, err
 		}

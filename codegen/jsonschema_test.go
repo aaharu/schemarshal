@@ -15,7 +15,8 @@ func TestSample1(t *testing.T) {
 	file, _ := os.Open("../test_data/a.json")
 	defer file.Close()
 	js, _ := ReadSchema(file)
-	jsType, _, _, _ := js.Parse(utils.UpperCamelCase(utils.FileName(file)))
+	gen := NewGenerator("test", "")
+	jsType, _ := js.parse(utils.UpperCamelCase(utils.FileName(file)), gen)
 	actual := jsType.generate()
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
@@ -26,7 +27,8 @@ func TestSample2(t *testing.T) {
 	file, _ := os.Open("../test_data/disk.json")
 	defer file.Close()
 	js, _ := ReadSchema(file)
-	jsType, _, _, _ := js.Parse(utils.UpperCamelCase(utils.FileName(file)))
+	gen := NewGenerator("test", "")
+	jsType, _ := js.parse(utils.UpperCamelCase(utils.FileName(file)), gen)
 	actual := jsType.generate()
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
