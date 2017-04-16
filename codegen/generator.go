@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
+	"sort"
 	"strconv"
 
 	"github.com/aaharu/schemarshal/utils"
@@ -62,7 +63,14 @@ func (g *Generator) Generate() ([]byte, error) {
 
 	if len(g.imports) > 1 {
 		buf.WriteString("import (\n")
-		for path, name := range g.imports {
+		// sort map
+		var keys []string
+		for k := range g.imports {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, path := range keys {
+			name := g.imports[path]
 			buf.WriteString(fmt.Sprintf("%s %s\n", name, path))
 		}
 		buf.WriteString(")\n\n")
@@ -82,7 +90,14 @@ func (g *Generator) Generate() ([]byte, error) {
 
 	if g.enumList != nil && len(g.enumList) > 0 {
 		buf.WriteString("\n")
-		for typeName, enum := range g.enumList {
+		// sort map
+		var keys []string
+		for k := range g.enumList {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, typeName := range keys {
+			enum := g.enumList[typeName]
 			buf.WriteString("type " + typeName + " int\n")
 			buf.WriteString("const (\n")
 			for i := range enum {
@@ -118,6 +133,7 @@ func (g *Generator) Generate() ([]byte, error) {
 	return format.Source(buf.Bytes())
 }
 
+// ImportSpec has `import` information
 type ImportSpec map[string]string
 
 type typeSpec struct {
@@ -125,6 +141,7 @@ type typeSpec struct {
 	jsontype *JSONType
 }
 
+// EnumSpec has enum information
 type EnumSpec map[string][]interface{}
 
 type jsonFormat int
@@ -139,6 +156,7 @@ const (
 	formatDatetime
 )
 
+// JSONType is type of json
 type JSONType struct {
 	format       jsonFormat
 	nullable     bool

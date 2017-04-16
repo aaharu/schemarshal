@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.5.0] - 2017-04-17
+### Changed
+- sort map
+
 ## [0.4.6] - 2017-03-20
 ### Fixed
 - stdin error
@@ -72,6 +76,7 @@
 - pre-release
 
 
+[0.5.0]: https://github.com/aaharu/schemarshal/compare/0.4.6...0.5.0
 [0.4.6]: https://github.com/aaharu/schemarshal/compare/0.4.5...0.4.6
 [0.4.5]: https://github.com/aaharu/schemarshal/compare/0.4.4...0.4.5
 [0.4.4]: https://github.com/aaharu/schemarshal/compare/0.4.3...0.4.4
