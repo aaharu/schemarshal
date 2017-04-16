@@ -11,6 +11,7 @@ package codegen
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	schema "github.com/lestrrat/go-jsschema"
 
@@ -104,7 +105,14 @@ func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, 
 			t.nullable = true
 		}
 		if js.schema.Properties != nil {
-			for key, propSchema := range js.schema.Properties {
+			// sort map
+			var keys []string
+			for k := range js.schema.Properties {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, key := range keys {
+				propSchema := js.schema.Properties[key]
 				propType, err := NewSchema(propSchema).parse(utils.UpperCamelCase(fieldName+" "+key), generator)
 				if err != nil {
 					return nil, err
