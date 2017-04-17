@@ -83,6 +83,7 @@ func (g *Generator) Generate() ([]byte, error) {
 	if g.decls != nil {
 		for i := range g.decls {
 			buf.WriteString("type " + g.decls[i].name + " ")
+			g.decls[i].jsontype.nullable = false
 			buf.Write(g.decls[i].jsontype.generate())
 			buf.WriteString("\n")
 		}
@@ -158,12 +159,12 @@ const (
 
 // JSONType is type of json
 type JSONType struct {
-	format       jsonFormat
-	nullable     bool
-	fields       []*field  // object has
-	itemType     *JSONType // array has
-	itemTypeName string    // object's array has
-	enumType     string    // enum has
+	format   jsonFormat
+	nullable bool
+	fields   []*field  // object has
+	itemType *JSONType // array has
+	typeName string    // object's array and object has
+	enumType string    // enum has
 }
 
 func (t *JSONType) addField(f *field) {
@@ -184,21 +185,25 @@ func (t *JSONType) generate() []byte {
 		if t.fields == nil {
 			buf.WriteString("map[string]interface{}")
 		} else {
-			buf.WriteString("struct {\n")
-			for i := range t.fields {
-				buf.WriteString(t.fields[i].name)
-				buf.WriteString(" ")
-				buf.Write(t.fields[i].jsontype.generate())
-				buf.WriteString(" ")
-				buf.Write(t.fields[i].jsontag.generate())
-				buf.WriteString("\n")
+			if t.typeName != "" {
+				buf.WriteString(t.typeName)
+			} else {
+				buf.WriteString("struct {\n")
+				for i := range t.fields {
+					buf.WriteString(t.fields[i].name)
+					buf.WriteString(" ")
+					buf.Write(t.fields[i].jsontype.generate())
+					buf.WriteString(" ")
+					buf.Write(t.fields[i].jsontag.generate())
+					buf.WriteString("\n")
+				}
+				buf.WriteString("}")
 			}
-			buf.WriteString("}")
 		}
 	} else if t.format == formatArray {
 		buf.WriteString("[]")
-		if t.itemTypeName != "" {
-			buf.WriteString(t.itemTypeName)
+		if t.typeName != "" {
+			buf.WriteString(t.typeName)
 		} else {
 			buf.Write(t.itemType.generate())
 		}

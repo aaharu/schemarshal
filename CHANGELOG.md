@@ -1,8 +1,14 @@
 # Change Log
 
+## [0.6.0] - 2017-04-18
+### Changed
+- object struct
+
+
 ## [0.5.0] - 2017-04-17
 ### Changed
 - sort map
+
 
 ## [0.4.6] - 2017-03-20
 ### Fixed
@@ -11,26 +17,32 @@
 ### Changed
 - code generated comments
 
+
 ## [0.4.5] - 2017-03-01
 ### Fixed
 - array item struct
+
 
 ## [0.4.4] - 2017-02-20
 ### Fixed
 - var name bugs
 
+
 ## [0.4.3] - 2017-02-20
 ### Fixed
 - var name bugs
+
 
 ## [0.4.2] - 2017-02-19
 ### Fixed
 - enum name bugs
 
+
 ## [0.4.1] - 2017-02-19
 ### Fixed
 - enum in array bugs
 - var name bugs
+
 
 ## [0.4.0] - 2017-01-23
 ### Fixed
@@ -76,6 +88,7 @@
 - pre-release
 
 
+[0.6.0]: https://github.com/aaharu/schemarshal/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/aaharu/schemarshal/compare/0.4.6...0.5.0
 [0.4.6]: https://github.com/aaharu/schemarshal/compare/0.4.5...0.4.6
 [0.4.5]: https://github.com/aaharu/schemarshal/compare/0.4.4...0.4.5
