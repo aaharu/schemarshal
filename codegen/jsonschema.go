@@ -117,14 +117,35 @@ func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, 
 				if err != nil {
 					return nil, err
 				}
-				t.addField(&field{
-					name:     utils.UpperCamelCase(key),
-					jsontype: propType,
-					jsontag: &jsonTag{
-						name:      key,
-						omitEmpty: !js.schema.IsPropRequired(key),
-					},
-				})
+				if propType.format == formatObject {
+					objectTypeName := utils.UpperCamelCase(fieldName + " " + key + "Object")
+					generator.addType(objectTypeName, propType)
+					copyType := &JSONType{
+						format:   propType.format,
+						nullable: propType.nullable,
+						fields:   propType.fields,
+						itemType: propType.itemType,
+						typeName: objectTypeName,
+						enumType: propType.enumType,
+					}
+					t.addField(&field{
+						name:     utils.UpperCamelCase(key),
+						jsontype: copyType,
+						jsontag: &jsonTag{
+							name:      key,
+							omitEmpty: !js.schema.IsPropRequired(key),
+						},
+					})
+				} else {
+					t.addField(&field{
+						name:     utils.UpperCamelCase(key),
+						jsontype: propType,
+						jsontag: &jsonTag{
+							name:      key,
+							omitEmpty: !js.schema.IsPropRequired(key),
+						},
+					})
+				}
 			}
 		}
 		if js.schema.Enum != nil {
@@ -152,8 +173,8 @@ func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, 
 		}
 		t.itemType = itemType
 		if itemType.format == formatObject {
-			itemFieldName := utils.UpperCamelCase(fieldName + " Item")
-			t.itemTypeName = itemFieldName
+			itemFieldName := utils.UpperCamelCase(fieldName + "Item")
+			t.typeName = itemFieldName
 			generator.addType(itemFieldName, itemType)
 		}
 		return t, nil
