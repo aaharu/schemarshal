@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.7.0] - 2017-05-09
+### Added
+- add UnmarshalJSON to enum
+
+
 ## [0.6.0] - 2017-04-18
 ### Changed
 - object struct
@@ -88,6 +93,7 @@
 - pre-release
 
 
+[0.7.0]: https://github.com/aaharu/schemarshal/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/aaharu/schemarshal/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/aaharu/schemarshal/compare/0.4.6...0.5.0
 [0.4.6]: https://github.com/aaharu/schemarshal/compare/0.4.5...0.4.6

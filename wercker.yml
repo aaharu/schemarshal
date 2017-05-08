@@ -1,4 +1,4 @@
-box: tcnksm/gox
+box: alexeiled/go-builder
 build:
   steps:
     - setup-go-workspace
@@ -7,25 +7,20 @@ build:
     - script:
         name: glide install
         code: |
-          curl -L -o glide.tar.gz https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz
-          tar -zxf glide.tar.gz
-          mv linux-amd64/glide "${WERCKER_SOURCE_DIR}/glide"
-          rm -rf linux-amd64 glide.tar.gz
-          "${WERCKER_SOURCE_DIR}/glide" --version
-          "${WERCKER_SOURCE_DIR}/glide" install
+          glide install
 
     # Build the project
     - script:
         name: go build
         code: |
-          go build $("${WERCKER_SOURCE_DIR}/glide" novendor)
+          go build $(glide novendor)
 
     # Test the project
     - script:
         name: go test and goveralls
         code: |
           echo "mode: count" > c.out
-          for pkg in $("${WERCKER_SOURCE_DIR}/glide" novendor); do
+          for pkg in $(glide novendor); do
             go test -v -covermode=count -coverprofile="pkg.out" "${pkg}"
             if [ -f "pkg.out" ]; then
               tail -n +2 "pkg.out" >> c.out
