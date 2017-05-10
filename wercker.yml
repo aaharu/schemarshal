@@ -52,13 +52,5 @@ deploy:
     - script:
         name: github release
         code: |
-          export PWD=$(pwd)
-          cd "${WERCKER_SOURCE_DIR}"
-          git tag "${RELEASE_TAG}" && git push --tags
-          cd $(echo "${PWD}")
-          github-release release --user aaharu --repo schemarshal --tag "${RELEASE_TAG}"
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/darwin_amd64/schemarshal
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/linux_amd64/schemarshal
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/windows_amd64/schemarshal.exe
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/freebsd_amd64/schemarshal
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/netbsd_amd64/schemarshal
+          go get github.com/tcnksm/ghr
+          "${GOPATH}/bin/ghr" -t ${GITHUB_TOKEN} -r ${WERCKER_GIT_REPOSITORY} -u ${WERCKER_GIT_OWNER} --debug --delete "${RELEASE_TAG}" pkg
