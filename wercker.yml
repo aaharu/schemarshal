@@ -44,7 +44,7 @@ deploy:
     - script:
         name: restore release tag
         code: |
-          if [ $(fgrep -c "## [Unreleased]" CHANGELOG.md) -eq 1 ]; then
+          if [ $(fgrep -c "## [Unreleased]" "${WERCKER_SOURCE_DIR}/CHANGELOG.md") -eq 1 ]; then
             exit 1
           fi
           export RELEASE_TAG=$(cat tag.out)
@@ -52,7 +52,10 @@ deploy:
     - script:
         name: github release
         code: |
-          github-release delete --user aaharu --repo schemarshal --tag "${RELEASE_TAG}"
+          export PWD=$(pwd)
+          cd "${WERCKER_SOURCE_DIR}"
+          git tag "${RELEASE_TAG}" && git push --tags
+          cd $(echo "${PWD}")
           github-release release --user aaharu --repo schemarshal --tag "${RELEASE_TAG}"
           github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/darwin_amd64/schemarshal
           github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/linux_amd64/schemarshal
