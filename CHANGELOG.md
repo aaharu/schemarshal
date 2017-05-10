@@ -103,6 +103,7 @@
 - pre-release
 
 
+[0.7.2]: https://github.com/aaharu/schemarshal/compare/0.7.1...0.7.2
 [0.7.1]: https://github.com/aaharu/schemarshal/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/aaharu/schemarshal/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/aaharu/schemarshal/compare/0.5.0...0.6.0

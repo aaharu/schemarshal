@@ -51,4 +51,4 @@ deploy:
         name: github release
         code: |
           go get github.com/tcnksm/ghr
-          "${GOPATH}/bin/ghr" -t ${GITHUB_TOKEN} -r ${WERCKER_GIT_REPOSITORY} -u ${WERCKER_GIT_OWNER} --debug --delete "${RELEASE_TAG}" pkg
+          "${GOPATH}/bin/ghr" -t ${GITHUB_TOKEN} -r ${WERCKER_GIT_REPOSITORY} -u ${WERCKER_GIT_OWNER} --delete "${RELEASE_TAG}" pkg
