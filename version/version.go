@@ -7,7 +7,7 @@ package version
 import "fmt"
 
 // Version of schemarshal
-const Version = "0.7.0"
+const Version = "0.7.1"
 
 // String return `<name> <version>`
 func String() string {

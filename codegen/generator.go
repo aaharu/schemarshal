@@ -154,6 +154,7 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("}\n")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n")
+			buf.WriteString("return fmt.Errorf(\"Error: miss-matched " + typeName + " (%s)\", data)\n")
 			buf.WriteString("}\n\n")
 		}
 	}

@@ -127,6 +127,7 @@ func (enum APhoneNumberHogeBbbEnum) UnmarshalJSON(data []byte) error {
 			}
 		}
 	}
+	return fmt.Errorf("Error: miss-matched APhoneNumberHogeBbbEnum (%s)", data)
 }
 
 ```
@@ -190,6 +191,7 @@ func (enum SchemarshalTypeTestEnum) UnmarshalJSON(data []byte) error {
 			}
 		}
 	}
+	return fmt.Errorf("Error: miss-matched SchemarshalTypeTestEnum (%s)", data)
 }
 
 type SchemarshalTypeTypeEnum int
@@ -234,6 +236,7 @@ func (enum SchemarshalTypeTypeEnum) UnmarshalJSON(data []byte) error {
 			}
 		}
 	}
+	return fmt.Errorf("Error: miss-matched SchemarshalTypeTypeEnum (%s)", data)
 }
 
 ```
