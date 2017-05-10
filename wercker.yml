@@ -33,6 +33,7 @@ build:
     - tcnksm/gox:
         os: "darwin linux windows freebsd netbsd"
         arch: "amd64"
+        output: "{{.Dir}}_{{.OS}}_{{.Arch}}"
 
     - script:
         name: output release tag
