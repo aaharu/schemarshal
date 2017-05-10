@@ -27,17 +27,12 @@ build:
               rm pkg.out
             fi
           done
-          go get github.com/mattn/goveralls
-          GIT_BRANCH="${WERCKER_GIT_BRANCH}" "${GOPATH}/bin/goveralls" -v -coverprofile=c.out -service=wercker.com -repotoken "${COVERALLS_TOKEN}"
+          GIT_BRANCH="${WERCKER_GIT_BRANCH}" goveralls -v -coverprofile=c.out -service=wercker.com -repotoken "${COVERALLS_TOKEN}"
 
     # corros compile
     - tcnksm/gox:
         os: "darwin linux windows freebsd netbsd"
         arch: "amd64"
-
-    - tcnksm/zip:
-        input: ${WERCKER_OUTPUT_DIR}/pkg
-        output: ${WERCKER_OUTPUT_DIR}/dist
 
     - script:
         name: output release tag
@@ -53,8 +48,14 @@ deploy:
             exit 1
           fi
           export RELEASE_TAG=$(cat tag.out)
-    - tcnksm/ghr:
-        token: ${GITHUB_TOKEN}
-        input: dist
-        version: ${RELEASE_TAG}
-        replace: true
+
+    - script:
+        name: github release
+        code: |
+          git tag "${RELEASE_TAG}" && git push --tags
+          github-release release --user aaharu --repo schemarshal --tag "${RELEASE_TAG}"
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/schemarshal_darwin_amd64"
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/schemarshal_linux_amd64"
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/schemarshal_windows_amd64"
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/schemarshal_freebsd_amd64"
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/schemarshal_netbsd_amd64"
