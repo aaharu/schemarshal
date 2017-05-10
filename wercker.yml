@@ -54,8 +54,8 @@ deploy:
         code: |
           git tag "${RELEASE_TAG}" && git push --tags
           github-release release --user aaharu --repo schemarshal --tag "${RELEASE_TAG}"
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/darwin_amd64/schemarshal"
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/linux_amd64/schemarshal"
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/windows_amd64/schemarshal.exe"
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/freebsd_amd64/schemarshal"
-          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file "${WERCKER_OUTPUT_DIR}/pkg/netbsd_amd64/schemarshal"
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/darwin_amd64/schemarshal
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/linux_amd64/schemarshal
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/windows_amd64/schemarshal.exe
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/freebsd_amd64/schemarshal
+          github-release upload --user aaharu --repo schemarshal --tag "${RELEASE_TAG}" --file pkg/netbsd_amd64/schemarshal
