@@ -1,8 +1,14 @@
 # Change Log
 
+## [0.7.2] - 2017-05-11
+### Changed
+- change build settings
+
+
 ## [0.7.1] - 2017-05-10
 ### Fixed
 - fix error in UnmarshalJSON
+
 
 ## [0.7.0] - 2017-05-09
 ### Added
