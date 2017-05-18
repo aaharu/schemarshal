@@ -128,7 +128,7 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", v)), nil\n")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n\n")
-			buf.WriteString("func (enum " + typeName + ") UnmarshalJSON(data []byte) error {\n")
+			buf.WriteString("func (enum *" + typeName + ") UnmarshalJSON(data []byte) error {\n")
 			buf.WriteString("var enumList = []interface{}{\n")
 			for i := range enum {
 				switch v := enum[i].(type) {
@@ -144,12 +144,12 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("switch vv := v.(type) {\n")
 			buf.WriteString("case string:\n")
 			buf.WriteString("if strconv.Quote(vv) == string(data) {\n")
-			buf.WriteString("enum = " + typeName + "(i)\n")
+			buf.WriteString("*enum = " + typeName + "(i)\n")
 			buf.WriteString("return nil\n")
 			buf.WriteString("}\n")
 			buf.WriteString("default:\n")
 			buf.WriteString("if fmt.Sprintf(\"%v\", v) == string(data) {\n")
-			buf.WriteString("enum = " + typeName + "(i)\n")
+			buf.WriteString("*enum = " + typeName + "(i)\n")
 			buf.WriteString("return nil\n")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n")
