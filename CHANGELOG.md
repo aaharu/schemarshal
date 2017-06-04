@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.8.0] - 2017-06-05
+### Added
+- add `String()` to enum
+
+
 ## [0.7.3] - 2017-05-19
 ### Fixed
 - fix UnmarshalJSON of enum
@@ -108,6 +113,7 @@
 - pre-release
 
 
+[0.8.0]: https://github.com/aaharu/schemarshal/compare/0.7.3...0.8.0
 [0.7.3]: https://github.com/aaharu/schemarshal/compare/0.7.2...0.7.3
 [0.7.2]: https://github.com/aaharu/schemarshal/compare/0.7.1...0.7.2
 [0.7.1]: https://github.com/aaharu/schemarshal/compare/0.7.0...0.7.1
