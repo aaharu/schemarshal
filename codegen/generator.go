@@ -128,12 +128,14 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", v)), nil\n")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n\n")
+			var stringers = map[int]string{}
 			buf.WriteString("func (enum *" + typeName + ") UnmarshalJSON(data []byte) error {\n")
 			buf.WriteString("var enumList = []interface{}{\n")
 			for i := range enum {
 				switch v := enum[i].(type) {
 				case string:
 					buf.WriteString(strconv.Quote(v))
+					stringers[i] = strconv.Quote(v)
 				default:
 					buf.WriteString(fmt.Sprintf("%v", v))
 				}
@@ -156,6 +158,15 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("}\n")
 			buf.WriteString("return fmt.Errorf(\"Error: miss-matched " + typeName + " (%s)\", data)\n")
 			buf.WriteString("}\n\n")
+			if len(stringers) > 0 {
+				buf.WriteString("func (enum " + typeName + ") String() string {\n")
+				buf.WriteString("var enumList = map[int]string{}\n")
+				for k, v := range stringers {
+					buf.WriteString("enumList[" + strconv.Itoa(k) + "] = " + v + "\n")
+				}
+				buf.WriteString("return enumList[int(enum)]\n")
+				buf.WriteString("}\n\n")
+			}
 		}
 	}
 

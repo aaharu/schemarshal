@@ -8,7 +8,7 @@ import "testing"
 
 func TestString(t *testing.T) {
 	actual := String()
-	expected := "schemarshal 0.7.3"
+	expected := "schemarshal 0.8.0"
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
