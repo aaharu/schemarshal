@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.9.0] - 2017-06-06
+### Added
+- add to enum methods
+### Fixed
+- improve MarshalJSON, UnmarshalJSON and String methods
+
+
 ## [0.8.0] - 2017-06-05
 ### Added
 - add `String()` to enum
@@ -113,6 +120,7 @@
 - pre-release
 
 
+[0.9.0]: https://github.com/aaharu/schemarshal/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/aaharu/schemarshal/compare/0.7.3...0.8.0
 [0.7.3]: https://github.com/aaharu/schemarshal/compare/0.7.2...0.7.3
 [0.7.2]: https://github.com/aaharu/schemarshal/compare/0.7.1...0.7.2

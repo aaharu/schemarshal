@@ -10,6 +10,7 @@ import (
 	"go/format"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/aaharu/schemarshal/utils"
 	"github.com/aaharu/schemarshal/version"
@@ -108,10 +109,15 @@ func (g *Generator) Generate() ([]byte, error) {
 					buf.WriteString(utils.UpperCamelCase(typeName+" "+fmt.Sprintf("%v", enum[i])) + "\n")
 				}
 			}
-			buf.WriteString(")\n")
-			buf.WriteString("func (enum " + typeName + ") MarshalJSON() ([]byte, error) {\n")
-			buf.WriteString("var enumList = []interface{}{\n")
+			buf.WriteString(")\n\n")
+
+			var enumMapName = "_" + strings.ToLower(typeName[:1])
+			if len(typeName) > 1 {
+				enumMapName += typeName[1:]
+			}
+			buf.WriteString("var " + enumMapName + " = map[" + typeName + "]interface{}{\n")
 			for i := range enum {
+				buf.WriteString(utils.UpperCamelCase(typeName+" "+fmt.Sprintf("%v", enum[i])) + ": ")
 				switch v := enum[i].(type) {
 				case string:
 					buf.WriteString(strconv.Quote(v))
@@ -120,29 +126,19 @@ func (g *Generator) Generate() ([]byte, error) {
 				}
 				buf.WriteString(",\n")
 			}
-			buf.WriteString("}\n")
-			buf.WriteString("switch v:= enumList[enum].(type) {\n")
+			buf.WriteString("}\n\n")
+
+			buf.WriteString("func (enum " + typeName + ") MarshalJSON() ([]byte, error) {\n")
+			buf.WriteString("switch v:= " + enumMapName + "[enum].(type) {\n")
 			buf.WriteString("case string:\n")
 			buf.WriteString("return []byte(strconv.Quote(v)), nil\n")
 			buf.WriteString("default:\n")
 			buf.WriteString("return []byte(fmt.Sprintf(\"%v\", v)), nil\n")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n\n")
-			var stringers = map[int]string{}
+
 			buf.WriteString("func (enum *" + typeName + ") UnmarshalJSON(data []byte) error {\n")
-			buf.WriteString("var enumList = []interface{}{\n")
-			for i := range enum {
-				switch v := enum[i].(type) {
-				case string:
-					buf.WriteString(strconv.Quote(v))
-					stringers[i] = strconv.Quote(v)
-				default:
-					buf.WriteString(fmt.Sprintf("%v", v))
-				}
-				buf.WriteString(",\n")
-			}
-			buf.WriteString("}\n")
-			buf.WriteString("for i, v := range enumList {\n")
+			buf.WriteString("for i, v := range " + enumMapName + " {\n")
 			buf.WriteString("switch vv := v.(type) {\n")
 			buf.WriteString("case string:\n")
 			buf.WriteString("if strconv.Quote(vv) == string(data) {\n")
@@ -158,15 +154,24 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("}\n")
 			buf.WriteString("return fmt.Errorf(\"Error: miss-matched " + typeName + " (%s)\", data)\n")
 			buf.WriteString("}\n\n")
-			if len(stringers) > 0 {
-				buf.WriteString("func (enum " + typeName + ") String() string {\n")
-				buf.WriteString("var enumList = map[int]string{}\n")
-				for k, v := range stringers {
-					buf.WriteString("enumList[" + strconv.Itoa(k) + "] = " + v + "\n")
-				}
-				buf.WriteString("return enumList[int(enum)]\n")
-				buf.WriteString("}\n\n")
-			}
+
+			buf.WriteString("func (enum " + typeName + ") String() string {\n")
+			buf.WriteString("switch v:= " + enumMapName + "[enum].(type) {\n")
+			buf.WriteString("case string:\n")
+			buf.WriteString("return v\n")
+			buf.WriteString("default:\n")
+			buf.WriteString("return fmt.Sprintf(\"%v\", v)\n")
+			buf.WriteString("}\n")
+			buf.WriteString("}\n\n")
+
+			buf.WriteString("func To" + typeName + "(val interface{}) (" + typeName + ", error) {\n")
+			buf.WriteString("for i, v := range " + enumMapName + " {\n")
+			buf.WriteString("if val == v {")
+			buf.WriteString("return i, nil")
+			buf.WriteString("}\n")
+			buf.WriteString("}\n")
+			buf.WriteString("return 0, fmt.Errorf(\"Error: Failed to " + typeName + ": %v\", val)")
+			buf.WriteString("}\n\n")
 		}
 	}
 
