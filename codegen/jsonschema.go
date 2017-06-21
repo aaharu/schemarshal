@@ -99,64 +99,6 @@ func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, 
 		}
 		return t, nil
 	}
-	if inPrimitiveTypes(schema.ObjectType, js.schema.Type) {
-		t.format = formatObject
-		if inPrimitiveTypes(schema.NullType, js.schema.Type) {
-			t.nullable = true
-		}
-		if js.schema.Properties != nil {
-			// sort map
-			var keys []string
-			for k := range js.schema.Properties {
-				keys = append(keys, k)
-			}
-			sort.Strings(keys)
-			for _, key := range keys {
-				propSchema := js.schema.Properties[key]
-				propType, err := NewSchema(propSchema).parse(utils.UpperCamelCase(fieldName+" "+key), generator)
-				if err != nil {
-					return nil, err
-				}
-				if propType.format == formatObject {
-					objectTypeName := utils.UpperCamelCase(fieldName + " " + key + "Object")
-					generator.addType(objectTypeName, propType)
-					copyType := &JSONType{
-						format:   propType.format,
-						nullable: propType.nullable,
-						fields:   propType.fields,
-						itemType: propType.itemType,
-						typeName: objectTypeName,
-						enumType: propType.enumType,
-					}
-					t.addField(&field{
-						name:     utils.UpperCamelCase(key),
-						jsontype: copyType,
-						jsontag: &jsonTag{
-							name:      key,
-							omitEmpty: !js.schema.IsPropRequired(key),
-						},
-					})
-				} else {
-					t.addField(&field{
-						name:     utils.UpperCamelCase(key),
-						jsontype: propType,
-						jsontag: &jsonTag{
-							name:      key,
-							omitEmpty: !js.schema.IsPropRequired(key),
-						},
-					})
-				}
-			}
-		}
-		if js.schema.Enum != nil {
-			enumName := utils.EnumTypeName(fieldName)
-			generator.enumList[enumName] = js.schema.Enum
-			t.enumType = enumName
-			generator.imports[`"strconv"`] = ""
-			generator.imports[`"fmt"`] = ""
-		}
-		return t, nil
-	}
 	if inPrimitiveTypes(schema.ArrayType, js.schema.Type) {
 		if js.schema.Items.TupleMode {
 			// unsupported
@@ -179,8 +121,62 @@ func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, 
 		}
 		return t, nil
 	}
-	err := fmt.Errorf("unsupported type %v", js.schema.Type)
-	return nil, err
+	t.format = formatObject
+	if inPrimitiveTypes(schema.NullType, js.schema.Type) {
+		t.nullable = true
+	}
+	if js.schema.Properties != nil {
+		// sort map
+		var keys []string
+		for k := range js.schema.Properties {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			propSchema := js.schema.Properties[key]
+			propType, err := NewSchema(propSchema).parse(utils.UpperCamelCase(fieldName+" "+key), generator)
+			if err != nil {
+				return nil, err
+			}
+			if propType.format == formatObject {
+				objectTypeName := utils.UpperCamelCase(fieldName + " " + key + "Object")
+				generator.addType(objectTypeName, propType)
+				copyType := &JSONType{
+					format:   propType.format,
+					nullable: propType.nullable,
+					fields:   propType.fields,
+					itemType: propType.itemType,
+					typeName: objectTypeName,
+					enumType: propType.enumType,
+				}
+				t.addField(&field{
+					name:     utils.UpperCamelCase(key),
+					jsontype: copyType,
+					jsontag: &jsonTag{
+						name:      key,
+						omitEmpty: !js.schema.IsPropRequired(key),
+					},
+				})
+			} else {
+				t.addField(&field{
+					name:     utils.UpperCamelCase(key),
+					jsontype: propType,
+					jsontag: &jsonTag{
+						name:      key,
+						omitEmpty: !js.schema.IsPropRequired(key),
+					},
+				})
+			}
+		}
+	}
+	if js.schema.Enum != nil {
+		enumName := utils.EnumTypeName(fieldName)
+		generator.enumList[enumName] = js.schema.Enum
+		t.enumType = enumName
+		generator.imports[`"strconv"`] = ""
+		generator.imports[`"fmt"`] = ""
+	}
+	return t, nil
 }
 
 func inPrimitiveTypes(needle schema.PrimitiveType, haystack schema.PrimitiveTypes) bool {

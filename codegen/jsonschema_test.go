@@ -12,9 +12,15 @@ import (
 )
 
 func TestSample1(t *testing.T) {
-	file, _ := os.Open("../test_data/a.json")
+	file, err := os.Open("../test_data/a.json")
+	if err != nil {
+		panic(err)
+	}
 	defer file.Close()
-	js, _ := ReadSchema(file)
+	js, err := ReadSchema(file)
+	if err != nil {
+		panic(err)
+	}
 	gen := NewGenerator("test", "")
 	jsType, _ := js.parse(utils.UpperCamelCase(utils.FileName(file)), gen)
 	actual := jsType.generate()
@@ -24,11 +30,38 @@ func TestSample1(t *testing.T) {
 }
 
 func TestSample2(t *testing.T) {
-	file, _ := os.Open("../test_data/disk.json")
+	file, err := os.Open("../test_data/disk.json")
+	if err != nil {
+		panic(err)
+	}
 	defer file.Close()
-	js, _ := ReadSchema(file)
+	js, err := ReadSchema(file)
+	if err != nil {
+		panic(err)
+	}
 	gen := NewGenerator("test", "")
 	jsType, _ := js.parse(utils.UpperCamelCase(utils.FileName(file)), gen)
+	actual := jsType.generate()
+	if len(actual) < 1 {
+		t.Errorf("got %v\n", string(actual))
+	}
+}
+
+func TestSample3(t *testing.T) {
+	file, err := os.Open("../test_data/qiita.json")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	js, err := ReadSchema(file)
+	if err != nil {
+		panic(err)
+	}
+	gen := NewGenerator("test", "")
+	jsType, err := js.parse(utils.UpperCamelCase(utils.FileName(file)), gen)
+	if err != nil {
+		panic(err)
+	}
 	actual := jsType.generate()
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
