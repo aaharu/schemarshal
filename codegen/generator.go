@@ -258,7 +258,7 @@ func (t *JSONType) generate() []byte {
 	} else if t.format == formatNumber {
 		buf.WriteString("float64")
 	} else if t.format == formatInteger {
-		buf.WriteString("int")
+		buf.WriteString("int64")
 	} else if t.format == formatDatetime {
 		buf.WriteString("time.Time")
 	}
