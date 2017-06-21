@@ -86,7 +86,7 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("type " + g.decls[i].name + " ")
 			g.decls[i].jsontype.nullable = false
 			buf.Write(g.decls[i].jsontype.generate())
-			buf.WriteString("\n")
+			buf.WriteString("\n\n")
 		}
 	}
 
@@ -164,13 +164,13 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("}\n")
 			buf.WriteString("}\n\n")
 
-			buf.WriteString("func To" + typeName + "(val interface{}) (" + typeName + ", error) {\n")
+			buf.WriteString("func To" + typeName + "(val interface{}) *" + typeName + " {\n")
 			buf.WriteString("for i, v := range " + enumMapName + " {\n")
 			buf.WriteString("if val == v {")
-			buf.WriteString("return i, nil")
+			buf.WriteString("return &i")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n")
-			buf.WriteString("return 0, fmt.Errorf(\"Error: Failed to " + typeName + ": %v\", val)")
+			buf.WriteString("return nil")
 			buf.WriteString("}\n\n")
 		}
 	}
