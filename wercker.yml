@@ -1,4 +1,4 @@
-box: alexeiled/go-builder
+box: alexeiled/go-builder:1.8-onbuild
 build:
   steps:
     - setup-go-workspace
