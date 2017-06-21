@@ -83,6 +83,9 @@ func (g *Generator) Generate() ([]byte, error) {
 
 	if g.decls != nil {
 		for i := range g.decls {
+			if g.decls[i].jsontype.description != "" {
+				buf.WriteString("// " + g.decls[i].name + " : " + g.decls[i].jsontype.description + "\n")
+			}
 			buf.WriteString("type " + g.decls[i].name + " ")
 			g.decls[i].jsontype.nullable = false
 			buf.Write(g.decls[i].jsontype.generate())
@@ -203,18 +206,16 @@ const (
 
 // JSONType is type of json
 type JSONType struct {
-	format   jsonFormat
-	nullable bool
-	fields   []*field  // object has
-	itemType *JSONType // array has
-	typeName string    // object's array and object has
-	enumType string    // enum has
+	format      jsonFormat
+	nullable    bool
+	fields      []*field  // object has
+	itemType    *JSONType // array has
+	typeName    string    // object's array and object has
+	enumType    string    // enum has
+	description string    // for comment
 }
 
 func (t *JSONType) addField(f *field) {
-	if t.fields == nil {
-		t.fields = []*field{}
-	}
 	t.fields = append(t.fields, f)
 }
 

@@ -52,7 +52,7 @@ func (js *JSONSchema) GetTitle() string {
 
 // parse returns JSON Schema type
 func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, error) {
-	var t = &JSONType{}
+	t := &JSONType{}
 	if inPrimitiveTypes(schema.IntegerType, js.schema.Type) ||
 		inPrimitiveTypes(schema.BooleanType, js.schema.Type) ||
 		inPrimitiveTypes(schema.NumberType, js.schema.Type) {
@@ -121,6 +121,7 @@ func (js *JSONSchema) parse(fieldName string, generator *Generator) (*JSONType, 
 		}
 		return t, nil
 	}
+	t.description = js.schema.Description
 	t.format = formatObject
 	if inPrimitiveTypes(schema.NullType, js.schema.Type) {
 		t.nullable = true
