@@ -83,10 +83,13 @@ func (g *Generator) Generate() ([]byte, error) {
 
 	if g.decls != nil {
 		for i := range g.decls {
+			if g.decls[i].jsontype.description != "" {
+				buf.WriteString("// " + g.decls[i].name + " : " + g.decls[i].jsontype.description + "\n")
+			}
 			buf.WriteString("type " + g.decls[i].name + " ")
 			g.decls[i].jsontype.nullable = false
 			buf.Write(g.decls[i].jsontype.generate())
-			buf.WriteString("\n")
+			buf.WriteString("\n\n")
 		}
 	}
 
@@ -164,13 +167,13 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("}\n")
 			buf.WriteString("}\n\n")
 
-			buf.WriteString("func To" + typeName + "(val interface{}) (" + typeName + ", error) {\n")
+			buf.WriteString("func To" + typeName + "(val interface{}) *" + typeName + " {\n")
 			buf.WriteString("for i, v := range " + enumMapName + " {\n")
 			buf.WriteString("if val == v {")
-			buf.WriteString("return i, nil")
+			buf.WriteString("return &i")
 			buf.WriteString("}\n")
 			buf.WriteString("}\n")
-			buf.WriteString("return 0, fmt.Errorf(\"Error: Failed to " + typeName + ": %v\", val)")
+			buf.WriteString("return nil")
 			buf.WriteString("}\n\n")
 		}
 	}
@@ -203,18 +206,16 @@ const (
 
 // JSONType is type of json
 type JSONType struct {
-	format   jsonFormat
-	nullable bool
-	fields   []*field  // object has
-	itemType *JSONType // array has
-	typeName string    // object's array and object has
-	enumType string    // enum has
+	format      jsonFormat
+	nullable    bool
+	fields      []*field  // object has
+	itemType    *JSONType // array has
+	typeName    string    // object's array and object has
+	enumType    string    // enum has
+	description string    // for comment
 }
 
 func (t *JSONType) addField(f *field) {
-	if t.fields == nil {
-		t.fields = []*field{}
-	}
 	t.fields = append(t.fields, f)
 }
 
@@ -258,7 +259,7 @@ func (t *JSONType) generate() []byte {
 	} else if t.format == formatNumber {
 		buf.WriteString("float64")
 	} else if t.format == formatInteger {
-		buf.WriteString("int")
+		buf.WriteString("int64")
 	} else if t.format == formatDatetime {
 		buf.WriteString("time.Time")
 	}

@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.0.0] - 2017-06-22
+### Added
+- add description comments
+- add test data
+### Changed
+- ToEnum methods return `nil`
+- integer to int64
+
+
 ## [0.9.0] - 2017-06-06
 ### Added
 - add to enum methods
@@ -120,6 +129,7 @@
 - pre-release
 
 
+[1.0.0]: https://github.com/aaharu/schemarshal/compare/0.9.0...1.0.0
 [0.9.0]: https://github.com/aaharu/schemarshal/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/aaharu/schemarshal/compare/0.7.3...0.8.0
 [0.7.3]: https://github.com/aaharu/schemarshal/compare/0.7.2...0.7.3
