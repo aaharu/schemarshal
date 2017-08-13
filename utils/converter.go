@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	alphaNum    = regexp.MustCompile(`[a-zA-Z]+[0-9]*`)
+	alphaNum    = regexp.MustCompile(`[a-zA-Z]+[0-9a-zA-Z]*`)
 	notAlphaNum = regexp.MustCompile(`[^a-zA-Z0-9]`)
 )
 

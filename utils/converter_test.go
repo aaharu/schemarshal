@@ -16,6 +16,12 @@ func TestUpperCamelCase(t *testing.T) {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
 
+	actual = UpperCamelCase("a1st address")
+	expected = "A1stAddress"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
+
 	actual = UpperCamelCase("address 1st")
 	expected = "Address1st"
 	if actual != expected {
