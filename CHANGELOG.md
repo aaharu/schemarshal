@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.0.1] - 2017-08-14
+### Fixed
+- fix UpperCamelCase
+
+
 ## [1.0.0] - 2017-06-22
 ### Added
 - add description comments
@@ -129,6 +134,7 @@
 - pre-release
 
 
+[1.0.1]: https://github.com/aaharu/schemarshal/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/aaharu/schemarshal/compare/0.9.0...1.0.0
 [0.9.0]: https://github.com/aaharu/schemarshal/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/aaharu/schemarshal/compare/0.7.3...0.8.0
