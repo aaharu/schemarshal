@@ -84,7 +84,7 @@ func (g *Generator) Generate() ([]byte, error) {
 	if g.decls != nil {
 		for i := range g.decls {
 			if g.decls[i].jsontype.description != "" {
-				buf.WriteString(fmt.Sprintf("// %s : %s \n", g.decls[i].name, g.decls[i].jsontype.description))
+				buf.WriteString(fmt.Sprintf("// %s : %s\n", g.decls[i].name, g.decls[i].jsontype.description))
 			}
 			buf.WriteString("type " + g.decls[i].name + " ")
 			g.decls[i].jsontype.nullable = false
@@ -106,10 +106,11 @@ func (g *Generator) Generate() ([]byte, error) {
 			buf.WriteString("type " + typeName + " int\n")
 			buf.WriteString("const (\n")
 			for i := range enum {
+				buf.WriteString(utils.UpperCamelCase(fmt.Sprintf("%s %v", typeName, enum[i])))
 				if i == 0 {
-					buf.WriteString(utils.UpperCamelCase(fmt.Sprintf("%s %v ", typeName, enum[0])) + typeName + " = iota\n")
+					buf.WriteString(" " + typeName + " = iota\n")
 				} else {
-					buf.WriteString(utils.UpperCamelCase(fmt.Sprintf("%s %v\n", typeName, enum[i])))
+					buf.WriteString("\n")
 				}
 			}
 			buf.WriteString(")\n\n")
@@ -120,7 +121,7 @@ func (g *Generator) Generate() ([]byte, error) {
 			}
 			buf.WriteString("var " + enumMapName + " = map[" + typeName + "]interface{}{\n")
 			for i := range enum {
-				buf.WriteString(utils.UpperCamelCase(fmt.Sprintf("%s %v: ", typeName, enum[i])))
+				buf.WriteString(utils.UpperCamelCase(fmt.Sprintf("%s %v", typeName, enum[i])) + ": ")
 				switch v := enum[i].(type) {
 				case string:
 					buf.WriteString(strconv.Quote(v))
