@@ -51,11 +51,3 @@ func TestFileName(t *testing.T) {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
 }
-
-func TestEnumTypeName(t *testing.T) {
-	actual := EnumTypeName("address")
-	expected := "AddressEnum"
-	if actual != expected {
-		t.Errorf("got %v\nwant %v", actual, expected)
-	}
-}
