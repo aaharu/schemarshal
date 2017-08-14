@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.0.2] - 2017-08-14
+### Fixed
+- fix generator bugs
+
+
 ## [1.0.1] - 2017-08-14
 ### Fixed
 - fix UpperCamelCase
@@ -134,6 +139,7 @@
 - pre-release
 
 
+[1.0.2]: https://github.com/aaharu/schemarshal/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/aaharu/schemarshal/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/aaharu/schemarshal/compare/0.9.0...1.0.0
 [0.9.0]: https://github.com/aaharu/schemarshal/compare/0.8.0...0.9.0
