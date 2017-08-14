@@ -6,14 +6,17 @@ package codegen
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"go/format"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/aaharu/schemarshal/utils"
 	"github.com/aaharu/schemarshal/version"
+	schema "github.com/lestrrat/go-jsschema"
 )
 
 // Generator of Go source code from JSON Schema
@@ -36,22 +39,157 @@ func NewGenerator(packageName string, command string) *Generator {
 	}
 }
 
+// ReadSchema : read and parse JSON Schema
+func (g *Generator) ReadSchema(input io.Reader, name string) error {
+	js, err := schema.Read(input)
+	if err != nil {
+		return err
+	}
+	if js.Title != "" {
+		name = js.Title
+	}
+	genType, err := g.parse(js, name)
+	if err != nil {
+		return err
+	}
+	g.addType(name, &genType)
+	return nil
+}
+
+// parse returns JSON Schema type
+func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error) {
+	jt := JSONType{}
+	if inPrimitiveTypes(schema.IntegerType, js.Type) ||
+		inPrimitiveTypes(schema.BooleanType, js.Type) ||
+		inPrimitiveTypes(schema.NumberType, js.Type) {
+		if inPrimitiveTypes(schema.IntegerType, js.Type) {
+			jt.format = formatInteger
+		} else if inPrimitiveTypes(schema.BooleanType, js.Type) {
+			jt.format = formatBoolean
+		} else {
+			jt.format = formatNumber
+		}
+		if inPrimitiveTypes(schema.NullType, js.Type) {
+			jt.nullable = true
+		}
+		if js.Enum != nil {
+			enumName := utils.EnumTypeName(fieldName)
+			if _, ok := g.enumList[enumName]; ok == true {
+				// FIXME: unsupported
+				return jt, errors.New("unsupported json")
+			}
+			g.enumList[enumName] = js.Enum
+			jt.enumType = enumName
+			g.imports[`"strconv"`] = ""
+			g.imports[`"fmt"`] = ""
+		}
+		return jt, nil
+	}
+	if inPrimitiveTypes(schema.StringType, js.Type) {
+		if js.Format == schema.FormatDateTime {
+			jt.format = formatDatetime
+			g.imports[`"time"`] = ""
+		} else {
+			jt.format = formatString
+		}
+		if inPrimitiveTypes(schema.NullType, js.Type) {
+			jt.nullable = true
+		}
+		if js.Enum != nil {
+			enumName := utils.EnumTypeName(fieldName)
+			g.enumList[enumName] = js.Enum
+			jt.enumType = enumName
+			g.imports[`"strconv"`] = ""
+			g.imports[`"fmt"`] = ""
+		}
+		return jt, nil
+	}
+	if inPrimitiveTypes(schema.ArrayType, js.Type) {
+		if js.Items.TupleMode {
+			// unsupported
+			return jt, fmt.Errorf("unsupported type %v", js.Items)
+		}
+		jt.format = formatArray
+		if inPrimitiveTypes(schema.NullType, js.Type) {
+			jt.nullable = true
+		}
+		itemType, err := g.parse(js.Items.Schemas[0], fieldName)
+		if err != nil {
+			return jt, err
+		}
+		jt.itemType = &itemType
+		if itemType.format == formatObject {
+			itemFieldName := utils.UpperCamelCase(fieldName + "Item")
+			jt.typeName = itemFieldName
+			g.addType(itemFieldName, &itemType)
+		}
+		return jt, nil
+	}
+	jt.description = js.Description
+	jt.format = formatObject
+	if inPrimitiveTypes(schema.NullType, js.Type) {
+		jt.nullable = true
+	}
+	if js.Properties != nil {
+		// sort map
+		var keys []string
+		for k := range js.Properties {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			propSchema := js.Properties[key]
+			propType, err := g.parse(propSchema, utils.UpperCamelCase(fieldName+" "+key))
+			if err != nil {
+				return jt, err
+			}
+			if propType.format == formatObject {
+				objectTypeName := utils.UpperCamelCase(fieldName + " " + key + "Object")
+				g.addType(objectTypeName, &propType)
+				copyType := &JSONType{
+					format:   propType.format,
+					nullable: propType.nullable,
+					fields:   propType.fields,
+					itemType: propType.itemType,
+					typeName: objectTypeName,
+					enumType: propType.enumType,
+				}
+				jt.addField(&field{
+					name:     utils.UpperCamelCase(key),
+					jsontype: copyType,
+					jsontag: &jsonTag{
+						name:      key,
+						omitEmpty: !js.IsPropRequired(key),
+					},
+				})
+			} else {
+				jt.addField(&field{
+					name:     utils.UpperCamelCase(key),
+					jsontype: &propType,
+					jsontag: &jsonTag{
+						name:      key,
+						omitEmpty: !js.IsPropRequired(key),
+					},
+				})
+			}
+		}
+	}
+	if js.Enum != nil {
+		enumName := utils.EnumTypeName(fieldName)
+		g.enumList[enumName] = js.Enum
+		jt.enumType = enumName
+		g.imports[`"strconv"`] = ""
+		g.imports[`"fmt"`] = ""
+	}
+	return jt, nil
+}
+
 // addType add a type statement
 func (g *Generator) addType(name string, jsonType *JSONType) {
 	g.decls = append(g.decls, &typeSpec{
 		name:     name,
 		jsontype: jsonType,
 	})
-}
-
-// AddSchema add JSONSchema to Generator
-func (g *Generator) AddSchema(name string, js *JSONSchema) error {
-	genType, err := js.parse(name, g)
-	if err != nil {
-		return err
-	}
-	g.addType(name, genType)
-	return nil
 }
 
 // Generate gofmt-ed Go source code
@@ -288,4 +426,13 @@ func (t *jsonTag) generate() []byte {
 	}
 	buf.WriteString("\"`")
 	return buf.Bytes()
+}
+
+func inPrimitiveTypes(needle schema.PrimitiveType, haystack schema.PrimitiveTypes) bool {
+	for _, v := range haystack {
+		if v == needle {
+			return true
+		}
+	}
+	return false
 }

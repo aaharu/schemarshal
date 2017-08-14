@@ -72,20 +72,9 @@ func main() {
 		input = strings.NewReader(string(stdin))
 	}
 
-	js, err := codegen.ReadSchema(input)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to read schema: %s\n", err)
-		os.Exit(1)
-	}
-
 	codeGenerator := codegen.NewGenerator(args.PackageName, strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
 
-	if js.GetTitle() != "" {
-		typeName = js.GetTitle()
-	}
-	typeName = utils.UpperCamelCase(typeName)
-	err = codeGenerator.AddSchema(typeName, js)
-	if err != nil {
+	if err := codeGenerator.ReadSchema(input, utils.UpperCamelCase(typeName)); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse: %s\n", err)
 		os.Exit(1)
 	}
@@ -97,7 +86,7 @@ func main() {
 	}
 
 	if args.OutputFileName == "" {
-		fmt.Printf("%s\n", src)
+		fmt.Println(string(src))
 	} else {
 		outputFile, err := os.Create(args.OutputFileName)
 		if err != nil {
@@ -105,6 +94,6 @@ func main() {
 			os.Exit(1)
 		}
 		outputFile.Write(src)
-		defer outputFile.Close()
+		outputFile.Close()
 	}
 }
