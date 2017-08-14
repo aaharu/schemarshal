@@ -48,6 +48,7 @@ func (g *Generator) ReadSchema(input io.Reader, name string) error {
 	if js.Title != "" {
 		name = js.Title
 	}
+	name = utils.UpperCamelCase(name)
 	genType, err := g.parse(js, name)
 	if err != nil {
 		return err
@@ -73,7 +74,7 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 			jt.nullable = true
 		}
 		if js.Enum != nil {
-			enumName := utils.EnumTypeName(fieldName)
+			enumName := fieldName + "Enum"
 			if _, ok := g.enumList[enumName]; ok == true {
 				// FIXME: unsupported
 				return jt, errors.New("unsupported json")
@@ -96,7 +97,7 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 			jt.nullable = true
 		}
 		if js.Enum != nil {
-			enumName := utils.EnumTypeName(fieldName)
+			enumName := fieldName + "Enum"
 			g.enumList[enumName] = js.Enum
 			jt.enumType = enumName
 			g.imports[`"strconv"`] = ""
@@ -119,7 +120,7 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 		}
 		jt.itemType = &itemType
 		if itemType.format == formatObject {
-			itemFieldName := utils.UpperCamelCase(fieldName + "Item")
+			itemFieldName := fieldName + "Item"
 			jt.typeName = itemFieldName
 			g.addType(itemFieldName, &itemType)
 		}
@@ -139,12 +140,12 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 		sort.Strings(keys)
 		for _, key := range keys {
 			propSchema := js.Properties[key]
-			propType, err := g.parse(propSchema, utils.UpperCamelCase(fieldName+" "+key))
+			propType, err := g.parse(propSchema, fieldName+utils.UpperCamelCase(key))
 			if err != nil {
 				return jt, err
 			}
 			if propType.format == formatObject {
-				objectTypeName := utils.UpperCamelCase(fieldName + " " + key + "Object")
+				objectTypeName := fieldName + utils.UpperCamelCase(key) + "Object"
 				g.addType(objectTypeName, &propType)
 				copyType := &JSONType{
 					format:   propType.format,
@@ -155,8 +156,9 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 					enumType: propType.enumType,
 				}
 				jt.addField(&field{
-					name:     utils.UpperCamelCase(key),
-					jsontype: copyType,
+					name:        utils.UpperCamelCase(key),
+					description: propSchema.Description,
+					jsontype:    copyType,
 					jsontag: &jsonTag{
 						name:      key,
 						omitEmpty: !js.IsPropRequired(key),
@@ -164,8 +166,9 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 				})
 			} else {
 				jt.addField(&field{
-					name:     utils.UpperCamelCase(key),
-					jsontype: &propType,
+					name:        utils.UpperCamelCase(key),
+					description: propSchema.Description,
+					jsontype:    &propType,
 					jsontag: &jsonTag{
 						name:      key,
 						omitEmpty: !js.IsPropRequired(key),
@@ -175,7 +178,7 @@ func (g *Generator) parse(js *schema.Schema, fieldName string) (JSONType, error)
 		}
 	}
 	if js.Enum != nil {
-		enumName := utils.EnumTypeName(fieldName)
+		enumName := fieldName + "Enum"
 		g.enumList[enumName] = js.Enum
 		jt.enumType = enumName
 		g.imports[`"strconv"`] = ""
@@ -317,6 +320,7 @@ func (g *Generator) Generate() ([]byte, error) {
 		}
 	}
 
+	//return buf.Bytes(), nil
 	return format.Source(buf.Bytes())
 }
 
@@ -374,6 +378,9 @@ func (t *JSONType) generate() []byte {
 			} else {
 				buf.WriteString("struct {\n")
 				for i := range t.fields {
+					if t.fields[i].description != "" {
+						buf.WriteString(fmt.Sprintf("// %s : %s\n", t.fields[i].name, t.fields[i].description))
+					}
 					buf.WriteString(t.fields[i].name)
 					buf.WriteString(" ")
 					buf.Write(t.fields[i].jsontype.generate())
@@ -406,9 +413,10 @@ func (t *JSONType) generate() []byte {
 }
 
 type field struct {
-	name     string
-	jsontype *JSONType
-	jsontag  *jsonTag
+	name        string
+	description string    // comment
+	jsontype    *JSONType // go type
+	jsontag     *jsonTag  // `json:""`
 }
 
 type jsonTag struct {

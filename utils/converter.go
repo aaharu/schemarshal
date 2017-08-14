@@ -36,8 +36,3 @@ func FileName(file *os.File) string {
 	ext := path.Ext(name)
 	return name[0 : len(name)-len(ext)]
 }
-
-// EnumTypeName returns Go Type literals
-func EnumTypeName(str string) string {
-	return UpperCamelCase(str) + "Enum"
-}

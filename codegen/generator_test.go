@@ -41,7 +41,7 @@ func TestSample1(t *testing.T) {
 	}
 	defer file.Close()
 	gen := NewGenerator("test", "")
-	if err := gen.ReadSchema(file, utils.UpperCamelCase(utils.FileName(file))); err != nil {
+	if err := gen.ReadSchema(file, utils.FileName(file)); err != nil {
 		panic(err)
 	}
 	actual, _ := gen.Generate()
@@ -57,7 +57,7 @@ func TestSample2(t *testing.T) {
 	}
 	defer file.Close()
 	gen := NewGenerator("test", "")
-	if err := gen.ReadSchema(file, utils.UpperCamelCase(utils.FileName(file))); err != nil {
+	if err := gen.ReadSchema(file, utils.FileName(file)); err != nil {
 		panic(err)
 	}
 	actual, _ := gen.Generate()
@@ -73,7 +73,7 @@ func TestSample3(t *testing.T) {
 	}
 	defer file.Close()
 	gen := NewGenerator("test", "")
-	if err := gen.ReadSchema(file, utils.UpperCamelCase(utils.FileName(file))); err != nil {
+	if err := gen.ReadSchema(file, utils.FileName(file)); err != nil {
 		panic(err)
 	}
 	actual, _ := gen.Generate()

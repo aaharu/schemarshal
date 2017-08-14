@@ -74,7 +74,7 @@ func main() {
 
 	codeGenerator := codegen.NewGenerator(args.PackageName, strings.Trim(fmt.Sprintf("%v", os.Args), "[]"))
 
-	if err := codeGenerator.ReadSchema(input, utils.UpperCamelCase(typeName)); err != nil {
+	if err := codeGenerator.ReadSchema(input, typeName); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse: %s\n", err)
 		os.Exit(1)
 	}
