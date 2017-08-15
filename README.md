@@ -45,7 +45,7 @@ curl -s "https://raw.githubusercontent.com/aaharu/schemarshal/master/test_data/d
 
 ## [Examples](examples.md)
 
-- [example a.json](examples.md#a.json)
+- [example a.json](examples.md#ajson)
 - [example qiita schema](examples.md#qiita-v2-schema)
 
 ## Dependencies

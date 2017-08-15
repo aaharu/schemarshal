@@ -1,14 +1,14 @@
 hash: 5d3ef523a7bb34322bc57c775a712625a7096f295c05d182f1f7dcb04a417901
-updated: 2017-01-23T00:29:24.784436222+09:00
+updated: 2017-08-15T02:14:03.765066079+09:00
 imports:
 - name: github.com/davecgh/go-spew
-  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
   subpackages:
   - spew
 - name: github.com/lestrrat/go-jspointer
   version: f4881e611bdbe9fb413a7780721ef8400a1f2341
 - name: github.com/lestrrat/go-jsref
-  version: e452c7b5801d1c6494c9e7e0cbc7498c0f88dfd1
+  version: 50df7b2d07d799426a9ac43fa24bdb4785f72a54
   subpackages:
   - provider
 - name: github.com/lestrrat/go-jsschema
@@ -18,13 +18,14 @@ imports:
 - name: github.com/lestrrat/go-structinfo
   version: f74c056fe41f860aa6264478c664a6fff8a64298
 - name: github.com/pkg/errors
-  version: 248dadf4e9068a0b3e79f02ed0a610d935de5302
+  version: c605e284fe17294bda444b34710735b29d1a9d90
 - name: golang.org/x/crypto
-  version: b8a2a83acfe6e6770b75de42d5ff4c67596675c0
+  version: b176d7def5d71bdd214203491f89843ed217f420
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: d75a52659825e75fff6158388dddc6a5b04f9ba5
+  version: e42485b6e20ae7d2304ec72e535b103ed350cc02
   subpackages:
   - unix
+  - windows
 testImports: []
