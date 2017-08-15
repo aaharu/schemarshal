@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.1] - 2017-08-16
+### Fixed
+- fix comments bugs
+
+### Changed
+- refactoring
+
+
 ## [1.1.0] - 2017-08-15
 ### Added
 - add description comments
@@ -152,7 +160,8 @@
 - pre-release
 
 
-[1.0.2]: https://github.com/aaharu/schemarshal/compare/1.0.2...1.1.0
+[1.1.1]: https://github.com/aaharu/schemarshal/compare/1.1.0...1.1.1
+[1.1.0]: https://github.com/aaharu/schemarshal/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/aaharu/schemarshal/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/aaharu/schemarshal/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/aaharu/schemarshal/compare/0.9.0...1.0.0

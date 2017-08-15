@@ -30,6 +30,15 @@ func UpperCamelCase(str string) string {
 	return result
 }
 
+// CleanDescription remove \n, \r and \t
+func CleanDescription(desc string) string {
+	desc = strings.TrimSpace(desc)
+	desc = strings.Replace(desc, "\n", " ", -1)
+	desc = strings.Replace(desc, "\r", " ", -1)
+	desc = strings.Replace(desc, "\t", " ", -1)
+	return desc
+}
+
 // FileName returns file-name without ext
 func FileName(file *os.File) string {
 	name := path.Base(file.Name())

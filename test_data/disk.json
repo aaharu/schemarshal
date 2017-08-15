@@ -15,6 +15,9 @@
         "type": "string",
         "enum": [ "x", "y" ]
       }
+    },
+    "num": {
+      "type": "number"
     }
   },
   "required": [ "type", "device" ],
