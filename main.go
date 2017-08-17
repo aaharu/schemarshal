@@ -79,8 +79,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	src, err := codeGenerator.Generate()
+	src, err := codeGenerator.Generate(args.NoComment)
 	if err != nil {
+		fmt.Println(string(src))
 		fmt.Fprintf(os.Stderr, "failed to generate: %s\n", err)
 		os.Exit(1)
 	}

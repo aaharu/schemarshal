@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.2.0] - 2017-08-18
+### Fixed
+- empty title bugs
+
+### Changed
+- golintable name
+
+### Added
+- add nocomment option
+- add tests
+
+
 ## [1.1.1] - 2017-08-16
 ### Fixed
 - fix comments bugs
@@ -160,6 +172,7 @@
 - pre-release
 
 
+[1.2.0]: https://github.com/aaharu/schemarshal/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/aaharu/schemarshal/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/aaharu/schemarshal/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/aaharu/schemarshal/compare/1.0.1...1.0.2

@@ -41,6 +41,15 @@ func TestUpperCamelCase(t *testing.T) {
 	}
 }
 
+func TestCleanDescription(t *testing.T) {
+	actual := CleanDescription(`改
+行`)
+	expected := "改 行"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
+}
+
 func TestFileName(t *testing.T) {
 	file, _ := os.Open("./converter_test.go")
 	defer file.Close()
