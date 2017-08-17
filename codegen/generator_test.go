@@ -44,7 +44,7 @@ func TestSample1(t *testing.T) {
 	if err := gen.ReadSchema(file, utils.FileName(file)); err != nil {
 		panic(err)
 	}
-	actual, _ := gen.Generate()
+	actual, _ := gen.Generate(true)
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
 	}
@@ -60,7 +60,7 @@ func TestSample2(t *testing.T) {
 	if err := gen.ReadSchema(file, utils.FileName(file)); err != nil {
 		panic(err)
 	}
-	actual, _ := gen.Generate()
+	actual, _ := gen.Generate(false)
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
 	}
@@ -76,7 +76,7 @@ func TestSample3(t *testing.T) {
 	if err := gen.ReadSchema(file, utils.FileName(file)); err != nil {
 		panic(err)
 	}
-	actual, _ := gen.Generate()
+	actual, _ := gen.Generate(false)
 	if len(actual) < 1 {
 		t.Errorf("got %v\n", string(actual))
 	}

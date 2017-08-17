@@ -22,8 +22,8 @@ func TestUpperCamelCase(t *testing.T) {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
 
-	actual = UpperCamelCase("address 1st")
-	expected = "Address1st"
+	actual = UpperCamelCase("address 1st_url")
+	expected = "Address1stURL"
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}
@@ -36,6 +36,15 @@ func TestUpperCamelCase(t *testing.T) {
 
 	actual = UpperCamelCase("box1")
 	expected = "Box1"
+	if actual != expected {
+		t.Errorf("got %v\nwant %v", actual, expected)
+	}
+}
+
+func TestCleanDescription(t *testing.T) {
+	actual := CleanDescription(`改
+行`)
+	expected := "改 行"
 	if actual != expected {
 		t.Errorf("got %v\nwant %v", actual, expected)
 	}

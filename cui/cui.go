@@ -17,6 +17,7 @@ type Arguments struct {
 	PackageName    string
 	TypeName       string
 	ShowVersion    bool
+	NoComment      bool
 }
 
 // Usage show help message.
@@ -36,6 +37,8 @@ func Usage() {
 	fmt.Fprintf(os.Stderr, "           %s\n", flag.Lookup("t").Usage)
 	fmt.Fprint(os.Stderr, "  -v, -version\n")
 	fmt.Fprintf(os.Stderr, "           %s\n", flag.Lookup("v").Usage)
+	fmt.Fprint(os.Stderr, "  -nc, -nocomment\n")
+	fmt.Fprintf(os.Stderr, "           %s\n", flag.Lookup("nc").Usage)
 }
 
 // ParseArguments parse command-line arguments
@@ -52,6 +55,8 @@ func ParseArguments() *Arguments {
 	flag.StringVar(&args.TypeName, "type", "", "Set default Type name.")
 	flag.BoolVar(&args.ShowVersion, "v", false, "Show version.")
 	flag.BoolVar(&args.ShowVersion, "version", false, "Show version.")
+	flag.BoolVar(&args.NoComment, "nc", false, "Do not output comments.")
+	flag.BoolVar(&args.NoComment, "nocomment", false, "Do not output comments.")
 	flag.Parse()
 	return args
 }
