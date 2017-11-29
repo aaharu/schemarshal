@@ -2,6 +2,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/aaharu/schemarshal/badge.svg)](https://coveralls.io/github/aaharu/schemarshal)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aaharu/schemarshal)](https://goreportcard.com/report/github.com/aaharu/schemarshal)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal?ref=badge_shield)
 
 Generates Go struct types from a [JSON Schema](http://json-schema.org/).
 
@@ -56,6 +57,9 @@ curl -s "https://raw.githubusercontent.com/aaharu/schemarshal/master/test_data/d
 * golang.org/x/crypto/ssh/terminal
   - https://godoc.org/golang.org/x/crypto/ssh/terminal
   - https://golang.org/LICENSE
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal?ref=badge_large)
 
 ## Similar Projects
 
