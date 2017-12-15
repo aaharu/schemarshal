@@ -30,6 +30,8 @@ OPTIONS
            Set default Type name.
   -v, -version
            Show version.
+  -nc, -nocomment
+           Do not output comments.
 ```
 
 ```bash
@@ -58,9 +60,6 @@ curl -s "https://raw.githubusercontent.com/aaharu/schemarshal/master/test_data/d
   - https://godoc.org/golang.org/x/crypto/ssh/terminal
   - https://golang.org/LICENSE
 
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal?ref=badge_large)
-
 ## Similar Projects
 
 * https://github.com/idubinskiy/schematyper
@@ -70,3 +69,5 @@ curl -s "https://raw.githubusercontent.com/aaharu/schemarshal/master/test_data/d
 ## License
 
 BSD-2-Clause
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Faaharu%2Fschemarshal?ref=badge_large)

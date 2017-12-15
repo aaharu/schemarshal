@@ -1,5 +1,5 @@
 // Copyright 2017 aaharu All rights reserved.
-// This source code is licensed under the BSD-style license found in
+// This source code is licensed under the 2-clause BSD license found in
 // the LICENSE file in the root directory of this source tree.
 
 package codegen
