@@ -1,6 +1,0 @@
-package: github.com/aaharu/schemarshal
-import:
-- package: github.com/lestrrat/go-jsschema
-- package: golang.org/x/crypto
-  subpackages:
-  - ssh/terminal

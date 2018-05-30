@@ -1,11 +1,11 @@
 # bin
 schemarshal
 schemarshal.exe
-glide
 
 *.out
 *.cov
 vendor/
+_vendor-*/
 
 artifacts/
 
