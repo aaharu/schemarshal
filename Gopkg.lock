@@ -22,8 +22,14 @@
 [[projects]]
   branch = "master"
   name = "github.com/lestrrat/go-jsschema"
-  packages = ["."]
+  packages = [".","validator"]
   revision = "a6a42341b50d8d7e2a733db922eefaa756321021"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lestrrat/go-jsval"
+  packages = [".","builder"]
+  revision = "cf70aae60f5b41a32922066c41287b0168e55904"
 
 [[projects]]
   branch = "master"
@@ -44,10 +50,40 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = ["assert"]
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/xeipuuv/gojsonpointer"
+  packages = ["."]
+  revision = "4e3ac2762d5f479393488629ee9370b50873b3a6"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/xeipuuv/gojsonreference"
+  packages = ["."]
+  revision = "bd5ef7bd5415a7ac448318e64f11a24cd21e594b"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/xeipuuv/gojsonschema"
+  packages = ["."]
+  revision = "9ff6d6c47f3f5de55acc6f464d6e3719b02818ae"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "ab813273cd59e1333f7ae7bff5d027d4aadf528c"
+  revision = "df8d4716b3472e4a531c33cedbe537dae921a1a9"
 
 [[projects]]
   branch = "master"
@@ -58,6 +94,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3b6e113f6198937e82135cec2dda76e9173423b56a620ecbe50e35115c7c7429"
+  inputs-digest = "c0dcbcfd64178b5dcdc92451640e98fbec58dee8a3b615bf4d87fa63db519378"
   solver-name = "gps-cdcl"
   solver-version = 1
