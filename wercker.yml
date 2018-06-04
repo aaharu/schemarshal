@@ -1,32 +1,31 @@
-box: alexeiled/go-builder:1.8-onbuild
+box: aaharu/go-build:latest
 build:
   steps:
-    - setup-go-workspace
+    - wercker/setup-go-workspace
+    - wercker/golint
+
+    - script:
+        name: initialize git submodules
+        code: |
+          git submodule update --init --recursive
 
     # Gets the dependencies
     - script:
-        name: glide install
+        name: dep ensure
         code: |
-          glide install
+          dep ensure
 
     # Build the project
     - script:
         name: go build
         code: |
-          go build $(glide novendor)
+          go build ./...
 
     # Test the project
     - script:
         name: go test and goveralls
         code: |
-          echo "mode: count" > c.out
-          for pkg in $(glide novendor); do
-            go test -v -covermode=count -coverprofile="pkg.out" "${pkg}"
-            if [ -f "pkg.out" ]; then
-              tail -n +2 "pkg.out" >> c.out
-              rm pkg.out
-            fi
-          done
+          go test -v -covermode=count -coverprofile="c.out" ./...
           GIT_BRANCH="${WERCKER_GIT_BRANCH}" goveralls -v -coverprofile=c.out -service=wercker.com -repotoken "${COVERALLS_TOKEN}"
 
     # corros compile
@@ -38,7 +37,7 @@ build:
     - script:
         name: output release tag
         code: |
-          fgrep 'const Version' "${WERCKER_SOURCE_DIR}/version/version.go" | cut -f4 -d ' ' | tr -d '"' > "${WERCKER_OUTPUT_DIR}/tag.out"
+          grep -F 'const Version' "${WERCKER_SOURCE_DIR}/version/version.go" | cut -f4 -d ' ' | tr -d '"' > "${WERCKER_OUTPUT_DIR}/tag.out"
 
 deploy:
   steps:
@@ -50,5 +49,4 @@ deploy:
     - script:
         name: github release
         code: |
-          go get github.com/tcnksm/ghr
-          "${GOPATH}/bin/ghr" -t ${GITHUB_TOKEN} -r ${WERCKER_GIT_REPOSITORY} -u ${WERCKER_GIT_OWNER} --delete "${RELEASE_TAG}" pkg
+          ghr -t ${GITHUB_TOKEN} -r ${WERCKER_GIT_REPOSITORY} -u ${WERCKER_GIT_OWNER} --delete "${RELEASE_TAG}" pkg

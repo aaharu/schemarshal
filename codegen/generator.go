@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aaharu/schemarshal/schema"
 	"github.com/aaharu/schemarshal/utils"
 	"github.com/aaharu/schemarshal/version"
-	schema "github.com/lestrrat/go-jsschema"
 )
 
 // Generator of Go source code from JSON Schema
@@ -75,7 +75,7 @@ func (g *generator) parse(js *schema.Schema, fieldName string) (jsonType, error)
 		} else {
 			jt.format = formatNumber
 		}
-		if inPrimitiveTypes(schema.NullType, js.Type) {
+		if inPrimitiveTypes(schema.NullType, js.Type) || js.Nullable.Val {
 			jt.nullable = true
 		}
 		if js.Enum != nil {
@@ -98,7 +98,7 @@ func (g *generator) parse(js *schema.Schema, fieldName string) (jsonType, error)
 		} else {
 			jt.format = formatString
 		}
-		if inPrimitiveTypes(schema.NullType, js.Type) {
+		if inPrimitiveTypes(schema.NullType, js.Type) || js.Nullable.Val {
 			jt.nullable = true
 		}
 		if js.Enum != nil {
@@ -116,7 +116,7 @@ func (g *generator) parse(js *schema.Schema, fieldName string) (jsonType, error)
 			return jt, fmt.Errorf("unsupported type %v", js.Items)
 		}
 		jt.format = formatArray
-		if inPrimitiveTypes(schema.NullType, js.Type) {
+		if inPrimitiveTypes(schema.NullType, js.Type) || js.Nullable.Val {
 			jt.nullable = true
 		}
 		itemType, err := g.parse(js.Items.Schemas[0], fieldName)
@@ -133,7 +133,7 @@ func (g *generator) parse(js *schema.Schema, fieldName string) (jsonType, error)
 	}
 	jt.description = js.Description
 	jt.format = formatObject
-	if inPrimitiveTypes(schema.NullType, js.Type) {
+	if inPrimitiveTypes(schema.NullType, js.Type) || js.Nullable.Val {
 		jt.nullable = true
 	}
 	if js.Properties != nil {
