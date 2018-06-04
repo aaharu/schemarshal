@@ -4,6 +4,11 @@ build:
     - wercker/setup-go-workspace
     - wercker/golint
 
+    - script:
+        name: initialize git submodules
+        code: |
+          git submodule update --init --recursive
+
     # Gets the dependencies
     - script:
         name: dep ensure
