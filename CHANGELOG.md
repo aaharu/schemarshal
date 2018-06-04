@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.3.0] - 2018-06-05
+### Added
+- support `nullable` (OpenAPI Specification)
+
+### Changed
+- glide to dep
+- build environments
+
 ## [1.2.0] - 2017-08-18
 ### Fixed
 - empty title bugs
@@ -172,6 +180,7 @@
 - pre-release
 
 
+[1.3.0]: https://github.com/aaharu/schemarshal/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/aaharu/schemarshal/compare/1.1.1...1.2.0
 [1.1.1]: https://github.com/aaharu/schemarshal/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/aaharu/schemarshal/compare/1.0.2...1.1.0
